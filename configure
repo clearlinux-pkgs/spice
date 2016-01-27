@@ -1,0 +1,2 @@
+--disable-celt051 --without-sasl --enable-lz4 --enable-opengl
+

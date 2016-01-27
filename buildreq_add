@@ -1,0 +1,11 @@
+# This file contains additional build requirements that did not get
+# picked up automatically. One name per line, no whitespace.
+
+pyparsing
+lz4-dev
+mesa-dev
+zlib-dev
+libjpeg-turbo-dev
+asciidoc
+glu-dev
+spice-protocol
