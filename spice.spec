@@ -4,7 +4,7 @@
 #
 Name     : spice
 Version  : 0.12.6
-Release  : 2
+Release  : 3
 URL      : http://www.spice-space.org/download/releases/spice-0.12.6.tar.bz2
 Source0  : http://www.spice-space.org/download/releases/spice-0.12.6.tar.bz2
 Summary  : SPICE server library
