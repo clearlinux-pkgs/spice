@@ -1,3 +1,3803 @@
+2016-04-11  Christophe Fergeau  <cfergeau@redhat.com>
+
+	char-device: Fix el6 compilation
+	One more duplicate typedef, once in reds.c and another time in
+	reds-private.h
+	RedsState::agent_dev is defined in reds-private.h but only used in
+	reds.c, so longer term this could all be moved back to reds.c
+
+2016-04-07  Christophe Fergeau  <cfergeau@redhat.com>
+
+	Move RedCharDeviceCallbacks into RedCharDeviceClass
+	This structure holding virtual function pointers was kept until now as a
+	RedCharDevice member in order to make the GObject conversion easier.
+	Now that all RedCharDevice children are converted to GObject, it can be
+	moved into RedCharDeviceClass.
+
+	reds: Remove red_char_device_new()
+	Nothing is using it anymore now that CharDevice classes are
+	gobjectified.
+
+2016-04-06  Christophe Fergeau  <cfergeau@redhat.com>
+
+	reds: Make VDIPortState a GObject
+	This inherits from RedCharDevice.
+
+2016-04-06  Jonathon Jongsma  <jjongsma@redhat.com>
+
+	Rename VDIPortState to RedCharDeviceVDIPort
+	Consistent with internal naming conventions, and prepares for
+	conversion to GObject
+
+2016-04-06  Christophe Fergeau  <cfergeau@redhat.com>
+
+	smartcard: Turn RedCharDeviceSmartcard into a GObject
+	This inherits from RedCharDevice. Once all char device states are
+	converted, we can turn the associated vfuncs into RedCharDeviceClass
+	vfuncs.
+
+2016-04-06  Jonathon Jongsma  <jjongsma@redhat.com>
+
+	Rename SmartCardDeviceState to RedCharDeviceSmartcard
+	More consistent with naming conventions, and prepares for converting
+	this type to a GObject which inherits from RedCharDevice.
+
+2016-04-06  Christophe Fergeau  <cfergeau@redhat.com>
+
+	Update spice-common submodule
+	Mostly to get fixes for older glib versions (both at compile time and
+	runtime).
+
+	Changes this brings in:
+
+	Christophe Fergeau (4):
+	      tests: Fix glib version check
+	      log: Clamp SPICE_DEBUG_LEVEL if it's too high
+	      log: Use SPICE_CONSTRUCTOR_FUNC
+	      log: Make sure glib threading is initialized
+
+	Eduardo Lima (Etrunko) (2):
+	      Fix build in systems with Glib version older than 2.38
+	      Add check for openssl
+
+	qxl: Remove duplicate QXLState typedef
+	We can directly include spice-qxl.h in red-qxl.h as it already gets it indirectly anyway.
+	>
+
+	reds: Move RedsState typedef to red-common.h
+	This allows to stop using struct RedsState * rather than RedsState * in
+	headers which cannot include reds.h. This also allows to remove the
+	duplicate RedsState typedef in reds.h and reds-stream.h which is causing
+	issues with older gcc versions.
+
+	char-device: Fix property name in red_char_device_new()
+	This method will be removed in a subsequent commit, but for now it's
+	causing breakage since it's setting "reds" instead of "spice-server"
+
+2016-04-05  Christophe Fergeau  <cfergeau@redhat.com>
+
+	audio: Improve snd_receive type-safety
+	We can pass it a SndChannel rather than an opaque void* data pointer
+	which we then blindly cast.
+	This came to light through a -Wshadow warning as there was a local
+	variable 'data' in addition to the 'data' parameter.
+
+	char-device: Remove duplicate typedef
+
+	gobject: Add g_type_init() for older glibs
+	Older glib versions require g_type_init() to be called before using
+	GObject.
+
+2016-04-02  Christophe Fergeau  <cfergeau@redhat.com>
+
+	reds: Prepare to make VDIPortState a GObject
+	This inherits from RedCharDevice.
+
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	reds: Make VDIPortState private to reds.c
+	VDIPortState and VDIReadBuf don't really need to be defined in a header
+	file as they are only used in reds.c
+
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	spicevmc: Introduce RedCharDeviceSpiceVmc GObject
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	char-device: Make RedCharDevice a GObject
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+2016-04-01  Frediano Ziglio  <fziglio@redhat.com>
+
+	Rename some missing names related to RedCharDevice
+	Acked-by: Pavel Grunt <pgrunt@redhat.com>
+
+	Rename SpiceCharDeviceCallbacks to RedCharDeviceCallbacks
+	The structure is an internal one so should not have the Spice prefix
+	but use the Red one.
+
+	Acked-by: Pavel Grunt <pgrunt@redhat.com>
+
+2016-04-01  Christophe Fergeau  <cfergeau@redhat.com>
+
+	doc: Be more explicit about virgl requirements
+	This is an attempt at listing the versions of the various packages which
+	needs to be up to date for a functional virgl + spice.
+
+	mjpeg: Add missing space to debug string
+
+	build-sys: Update libtool versioning for 0.13.1
+
+	Update NEWS for 0.13.1
+
+2016-04-01  Jonathon Jongsma  <jjongsma@redhat.com>
+
+	Rename RedCharDevice functions
+	make the function names match the type names. So
+	spice_char_device_state_* becomes red_char_device_* and
+	spice_char_device_* also becomes red_char_device_*.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	Rename SpiceCharDeviceClientState to RedCharDeviceClient
+	Make it consistent with the renamed RedCharDevice and the convention of
+	using 'Red' namespaces for internal types
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	Rename SpiceCharDeviceState to RedCharDevice
+	This is more consistent with internal type naming convention, and it
+	paves the way for a new char device GObject heirarchy
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	Rename SpiceCharDeviceWriteBuffer to RedCharDeviceWriteBuffer
+	Internal types should use 'Red' namespace for consistency
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	Rename SpiceCharDeviceMsgToClient to RedCharDeviceMsgToClient
+	Internal types should use Red namespace for consistency
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2016-03-31  Christophe Fergeau  <cfergeau@redhat.com>
+
+	char-device: Avoid use-after-free
+	Reset pointer after freeing the structure pointing to it.
+
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+2016-03-30  Christophe Fergeau  <cfergeau@redhat.com>
+
+	smartcard: Prepare to turn SmartcardState into a GObject
+	Move all internal data into a private struct so that it won't be exposed
+	when we move SmartCardDeviceState into the header.
+
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+2016-03-30  Jonathon Jongsma  <jjongsma@redhat.com>
+
+	Convert Dispatcher and MainDispatcher to GObjects
+	Allows more explicit inheritance relationship, and numerous other
+	advantages.
+
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+2016-03-29  Christophe Fergeau  <cfergeau@redhat.com>
+
+	char-device: Move instance data to SpiceCharDeviceState::priv
+	Create a structure to hold private data.
+	This helps to make patch for GObject smaller.
+
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+2016-03-29  Frediano Ziglio  <fziglio@redhat.com>
+
+	dispatcher: move channel final initialization to red-worker
+	CursorChannel and DisplayChannel was initialized half in red_worker_new
+	and half in red_dispatcher_init using some accessor for RedWorker
+	(red_worker_get_cursor_channel and red_worker_get_display_channel).
+	Moving directly into red_worker_new make easier to follow code path.
+
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+2016-03-24  Frediano Ziglio  <fziglio@redhat.com>
+
+	qxl: use Dispatcher in channel callbacks
+	There is no need callbacks knows about internal QXLState.
+
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+2016-03-24  Francois Gouget  <fgouget@codeweavers.com>
+
+	server: More clearly identify channels that support multiple clients
+	Rename the function to channel_supports_multiple_clients() as
+	channel_is_secondary() is unclear and was coded to return the opposite
+	of what was originally intended.
+	Also there are few channel types and whether they support multiple
+	clients is totally static so we might as well delegate the check to
+	the compiler.
+
+2016-03-24  Frediano Ziglio  <fziglio@redhat.com>
+
+	do not compile dump_bitmap if not necessary
+	This function is used only for debugging
+
+	Acked-by: Victor Toso <victortoso@redhat.com>
+
+2016-03-24  Christophe Fergeau  <cfergeau@redhat.com>
+
+	doc: Add virgl documentation
+	Document how to use virgl with QEMU/libvirt
+
+	virt-manager documentation still needs to be added.
+
+2016-03-24  Frediano Ziglio  <fziglio@redhat.com>
+
+	make some functions static
+	No need to have callback registered internally no static
+
+	Acked-by: Victor Toso <victortoso@redhat.com>
+
+	removed unused red_qxl_set_mm_time
+	This helper call a deprecated callback.
+
+	Acked-by: Victor Toso <victortoso@redhat.com>
+
+	remove unused reds_set_mm_time
+	Acked-by: Victor Toso <victortoso@redhat.com>
+
+2016-03-23  Frediano Ziglio  <fziglio@redhat.com>
+
+	use constructor/destructor macros
+	Initialize global images at load time:
+	- make sure these stuff are initialized without using runtime
+	resources;
+	- make sure stuff are initialize really earlier.
+	Do not use atexit function but a destructor.
+
+	Acked-by: Pavel Grunt <pgrunt@redhat.com>
+
+	qxl: implement QXLWorker interface, do not use as a base class
+	QXLWorker is the old interface now completely deprecated.
+	Remove the strict dependency of having it as a base class.
+
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+	declare and use message for RED_WORKER_MESSAGE_GL_SCANOUT
+	All other messages (even empty ones) have a structure defined.
+
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+	build-sys: use safer SPICE_CONTAINEROF version
+	Enable additional checks for this macro.
+
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+2016-03-23  Jonathon Jongsma  <jjongsma@redhat.com>
+
+	Remove last usage of global 'reds' variable
+	This should be the final piece of removing the global reds variable. We
+	still need a global variable to clean up during the atexit() function,
+	but we use a GList of servers (even though we technically don't support
+	multiple servers in the same process yet).
+
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2016-03-22  Christophe Fergeau  <cfergeau@redhat.com>
+
+	char-device: Add helpers for SpiceCharDeviceCallbacks vfuncs
+	Add helper functions wrapping calls to the virtual functions
+	defined in SpiceCharDeviceCallbacks.
+
+	Acked-by: Pavel Grunt <pgrunt@redhat.com>
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2016-03-21  Christophe Fergeau  <cfergeau@redhat.com>
+
+	Remove dependency of vdi_port_read_buf_process on RedsState
+	This makes it easier to move the VDIPort API to a different file, and
+	make it as self-contained as possible.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	agent: Sync AgentMsgFilter state upon agent connection
+	AgentMsgFilter needs to know whether monitors config messages need to be
+	filtered or not. This used to be done from within
+	agent_msg_filter_config() using the global RedsState, but this got more
+	tricky as it was removed.
+	A first attempt a1e62fa5ae9 caused crashes on qemu startup with
+	"qemu-system-x86_64 -spice port=5900" (without -vga qxl). A second
+	attempt added a RedsState* argument to agent_msg_filter_config() which
+	in my opinion is not really nice from a layering point of view.
+
+	This new attempt makes sure AgentMsgFilter state is correct when the
+	filter is set to stop discarding all data, which allows to remove direct
+	use of RedsState from within AgentMsgFilter.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	Revert "fix regression due to callback called earlier"
+	Passing Reds into agent-msg-filter.[ch] isn't the right thing to do from
+	a layering point of view.
+
+	This reverts commit a1e62fa5ae983b7b69cb437b2635ce84b2471383.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2016-03-17  Christophe Fergeau  <cfergeau@redhat.com>
+
+	Remove red_channel_set_data()
+	It's always called at the same time as red_channel_register_client_cbs()
+	and the data is used by the callbacks, so we can pass the data as an
+	argument to red_channel_register_client_cbs().
+
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	Use red_qxl_check_qxl_version in red-worker
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	Add more red_qxl_ methods
+	Add red_qxl_ methods wrapping the QXLInterface vfuncs. This allows to
+	remove most of the qxl_get_interface() use outside of red-qxl.c
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	Use QXLInstance instead of QXLState in red_qxl_*
+	This seems to make more sense this way, QXLInstance is the 'main' object
+	with QXLState being its private data. External users then use QXLInstance
+	rather than passing a pointer to the private data to red-qxl.h methods.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2016-03-16  Francois Gouget  <fgouget@codeweavers.com>
+
+	server: Add some comments to the sound structures.
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	server: Give the SndChannel's ref and unref methods their expected name
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+2016-03-16  Uri Lublin  <uril@redhat.com>
+
+	replay: skip the first N (slow) commands
+	Note that the commands are executed by spice-server.
+	The "skip" is only done on the "sleep" part of the
+	"slow" command-line option.
+
+	This is helpful to run quickly through uninsteresting commands
+	in a beginning of a recorded file and going slowly when
+	interesting parts appear
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	replay: count commands
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2016-03-15  Christophe Fergeau  <cfergeau@redhat.com>
+
+	Use more explicit variable name in marshall_gl_scanout()
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	Fix typo in variable name in function prototype
+	num_common_cap rather than num_common_caps was not consistent with
+	the naming of the other arguments.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	Remove unused red_qxl_set_dispatcher_opaque
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2016-03-11  Christophe Fergeau  <cfergeau@redhat.com>
+
+	Remove spice_server_set_keepalive_timeout
+	This public API is no longer needed as the keepalive interval does not
+	need to be configurable.
+	This API was present in the 0.13.0 release, but was never added to a
+	stable release, in my opinion it's still acceptable to remove it without
+	changing soname.
+
+	Always enable TCP keepalive
+	Always enabled, hardcoded interval
+	as per https://bugzilla.redhat.com/show_bug.cgi?id=1298590
+
+2016-03-11  Marc-André Lureau  <marcandre.lureau@gmail.com>
+
+	Update spice-common
+	Pick codegen build fix (codegen is back in spice-common, see related
+	commits & discussion thread)
+
+2016-03-10  Christophe Fergeau  <cfergeau@redhat.com>
+
+	smartcard: Move private constant to C file
+	APDUBufSize is only used within smartcard.c, no need to expose it in
+	smartcard.h
+
+	Acked-by: Pavel Grunt <pgrunt@redhat.com>
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	Rename red_channel_pipe_item_init to pipe_item_init
+	The RedChannel argument is not used by pipe_item_init. Removing it
+	will make code simpler in places where we don't have a RedChannel
+	directly available.
+	This is acting on a PipeItem object so correct name is pipe_item_init.
+
+	Acked-by: Pavel Grunt <pgrunt@redhat.com>
+
+	char-device: Refactor spice_char_device_client_add a bit
+	Factor out CharDeviceClientState creation out of
+	spice_char_device_client_add.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2016-03-09  Christophe Fergeau  <cfergeau@redhat.com>
+
+	Replace RedsPrivate::mig_wait_disconnect_clients with a GList
+	The code was introducing an intermediate RedsMigWaitDisconnectClient type to
+	hold linked list elements, resulting in a memory handling behaviour very
+	similar to a GList. Using GList directly makes the code shorter and more
+	readable.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	Replace RedsPrivate::char_devs_state with a GList
+	The code was introducing an intermediate SpiceCharDevStateItem type to
+	hold linked list elements, resulting in a memory handling behaviour very
+	similar to a GList. Using GList directly makes the code shorter and more
+	readable.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	Introduce spice_char_device_get_interface()
+	Hides awkward casting/dereferencing to go from a
+	SpiceCharDeviceInstance to a SpiceCharDeviceInterface
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2016-03-09  Frediano Ziglio  <fziglio@redhat.com>
+
+	Fix regression initialising QXL interface
+	st field in QXLInstance was not checked for NULL before
+	initialisation.
+	The additional check make Xspice crash during startup.
+
+	Reported-by: Francois Gouget <fgouget@codeweavers.com>
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+2016-03-08  Marc-André Lureau  <marcandre.lureau@gmail.com>
+
+	Fix dcc_start() regression
+	Commit e9ed125d introduced a dead-lock regression by taking twice the
+	same lock recursively. The previous code checked if a dmabuf was set
+	without taking the lock, for queuing scanout messages. Since the message
+	is being processed later on, it make sense to queue and delay until it
+	is sent to check if there is a scanout.
+
+	backtrace:
+	 #0  red_qxl_get_gl_scanout (qxl_state=0x5555582373c0) at red-qxl.c:828
+	 #1  0x00007fffec1ae654 in marshall_gl_scanout (rcc=0x7fffda6a7010,
+	 #m=0x7fff44025e60, item=0x7fff440958a0) at dcc-send.c:2310
+	 #2  0x00007fffec1aec7b in dcc_send_item (dcc=0x7fffda6a7010,
+	 #pipe_item=0x7fff440958a0) at dcc-send.c:2441
+	 #3  0x00007fffec1730f6 in send_item (rcc=0x7fffda6a7010,
+	 #item=0x7fff440958a0) at display-channel.c:1963
+	 #4  0x00007fffec1504c3 in
+	 #red_channel_client_send_item (rcc=0x7fffda6a7010, item=0x7fff440958a0)
+	 #at red-channel.c:578
+	 #5  0x00007fffec152d98 in red_channel_client_push (rcc=0x7fffda6a7010)
+	 #at red-channel.c:1365
+	 #6  0x00007fffec1a387e in dcc_push_monitors_config (dcc=0x7fffda6a7010)
+	 #at dcc.c:563
+	 #7  0x00007fffec1a3489 in dcc_start (dcc=0x7fffda6a7010) at dcc.c:475
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2016-03-05  Jonathon Jongsma  <jjongsma@redhat.com>
+
+	Remove use of global 'reds' within RedWorker
+	Get the server variable from the QXLState instead of using the
+	global variable
+
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	Add red_qxl_get_server()
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	Store reference to RedsState in QXLState
+	Remove use of global 'reds' variable from QXLState functions.
+	Instead store the owning RedsState variable inside the QXLState
+	struct and use that when necessary.
+
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2016-03-04  Frediano Ziglio  <fziglio@redhat.com>
+
+	worker: remove useless qxl_state
+	qxl_state can be extracted easily from qxl.
+
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	use QXLState instead of RedDispatcher
+	Considering that:
+	- QXLState is the state of QXLInstance implementation;
+	- RedDispatcher is the implementation of QXL;
+	- qif (QXLInterface*) field can be computed really easy from QXLInstance;
+	- most of its state is private.
+	Make all structure private and use QXLState instead of RedDispatcher.
+
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+	rename red-dispatcher.* files to red-qxl.*
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	rename red_dispatcher_ functions to red_qxl_
+	RedDispatcher is basically implementing QXLInstance.
+	After some internal discussion we decided to use QXLState structure
+	and red_qxl_ as function prefix.
+	This is the first of 3 patches that rename functions, structure
+	and files.
+
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	fix indentation
+	Fix indentation for spice_debug call.
+
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+	optimize handle_dev_input call
+	Pass directly dispatcher to handle_dev_input callback.
+
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+	reduce header dependencies
+	Avoid to include headers in cursor-channel.h which are only
+	used by cursor-channel.c
+
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+2016-03-03  Francois Gouget  <fgouget@codeweavers.com>
+
+	server: Fix the order of the attach_stream() asserts
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+2016-03-03  Christophe Fergeau  <cfergeau@redhat.com>
+
+	Make use of the new reds_core_timer_* API
+	This makes the code more readable.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	Introduce reds_core_timer_*
+
+	Introduce reds_core_watch_*
+	These methods wrap the RedsCoreInterface::watch_add,
+	RedsCoreInterface::watch_remove and RedsCoreInterface::watch_update_mask
+	vfuncs.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2016-03-03  Uri Lublin  <uril@redhat.com>
+
+	replay: do not use argv after g_option_context_parse
+	Apparently, after using g_option_context_parse with G_OPTION_REMAINING
+	argv is modified and should not be used.
+	This patch uses "file" instead of "argv" and makes sure
+	file is freed later.
+	No free is called upon error - exit takes care of it.
+
+2016-03-03  Francois Gouget  <fgouget@codeweavers.com>
+
+	server: Store the opaque pointer in VideoEncoderRateControlCbs
+	It has the same lifetime as the corresponding structure so this
+	simplifies keeping track of it.
+
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2016-02-26  Francois Gouget  <fgouget@codeweavers.com>
+
+	server: Don't call snd_channel_get_server() if we don't have a channel
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2016-02-25  Francois Gouget  <fgouget@codeweavers.com>
+
+	server: Remove an unnecessary cast in spice_replay_next_cmd()
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2016-02-25  Michal Privoznik  <mprivozn@redhat.com>
+
+	Update .gitignore files
+	The first part updates the .gitignore file in the root directory
+	because the file is obviously generated by automake but poison
+	our working tree.
+	The second part updates the .gitignore under server/tests/
+	directory because since 0db1137d we have a noinst test library
+	libtest.a. However, like in previous case, git should never track
+	this file.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	configure: Require spice-protocol-0.12.11 at least
+	After 7a06efde we require SPICE_MSG_DISPLAY_GL_SCANOUT_UNIX
+	symbol from spice-protocol (or value to be more precise). This
+	has been however introduced in version 0.12.11 of the
+	spice-protocol (commit 3fc2221e there). However, our configure
+	check does not reflect this change. Fix it.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2016-02-23  Frediano Ziglio  <fziglio@redhat.com>
+
+	use G_N_ELEMENTS instead of manually compute array size
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	constify some global variables
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+2016-02-20  Frediano Ziglio  <fziglio@redhat.com>
+
+	fix possible core calling timer callback
+	Was possible to have ping_timer_cb called with a NULL pointer.
+
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+2016-02-19  Frediano Ziglio  <fziglio@redhat.com>
+
+	fix regression due to callback called earlier
+	Patch 1f210080609f2c00b4d1859eb0b363a38838e7d3 ("Remove use of global
+	'reds' from AgentMsgFilter") introduced a regression. This because
+	QXLInterface->client_monitors_config was called before returning
+	from spice_add_interface. Some client of spice-server expect the
+	spice_add_interface already returned and some state change was done
+	before client_monitors_config was called.
+
+	Acked-by: Pavel Grunt <pgrunt@redhat.com>
+
+2016-02-18  Frediano Ziglio  <fziglio@redhat.com>
+
+	memslot: do not crash if guest provide a wrong address
+	This could happen with buggy driver.
+
+	This fixes https://bugzilla.redhat.com/show_bug.cgi?id=1264356
+
+	Acked-by: Pavel Grunt <pgrunt@redhat.com>
+
+2016-02-17  Frediano Ziglio  <fziglio@redhat.com>
+
+	reds: remove unneeded variable
+	Remove version_string variable.
+	Was never changed and used in a single place.
+
+	Acked-by: Pavel Grunt <pgrunt@redhat.com>
+
+2016-02-17  Jonathon Jongsma  <jjongsma@redhat.com>
+
+	CommonChannel -> CommonGraphicsChannel
+	Rename this struct to make it clear that it's only the base class for
+	graphics channels (e.g. display and cursor), not all channels.
+
+	Also renamed CommonChannelClient to CommonGraphicsChannelClient.
+
+	Acked-by: Pavel Grunt <pgrunt@redhat.com>
+
+2016-02-17  Pavel Grunt  <pgrunt@redhat.com>
+
+	compress-stat: Add not compressed image to statistics
+	To see how many images and data could not be compressed.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	dcc: Move COMPRESS_DEBUG to compression functions
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	dcc: Rewrite dcc_image_compress
+	Rules are now:
+
+	Compression type:
+	  off      -> uncompressed
+	  quic     -> jpeg if possible else quic else off
+	  lz       -> lz if possible else off
+	  glz      -> glz if possible else lz else off
+	  auto_lz  -> lz if possible else jpeg else quic else off
+	  auto_glz -> glz if possible else lz else jpeg else quic else off
+	  lz4      -> lz4 if possible else lz else off
+
+	jpeg is used only when jpeg-wan-compression allows it
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2016-02-16  Frediano Ziglio  <fziglio@redhat.com>
+
+	make RedDataChunk structure private inside red-parse-qxl.c
+	The structure is strictly used by the parser only, no reason to make it
+	public.
+
+	Acked-by: Pavel Grunt <pgrunt@redhat.com>
+
+	worker: removed unused red_worker_get_qxl function
+	Acked-by: Pavel Grunt <pgrunt@redhat.com>
+
+	dcc: move id from CommonChannelClient to DisplayChannelClient
+	Was not used by CursorChannelClient but only by DisplayChannelClient.
+
+	Acked-by: Pavel Grunt <pgrunt@redhat.com>
+
+2016-02-16  Jonathon Jongsma  <jjongsma@redhat.com>
+
+	Add GObject to build requirements
+	Preparation for GObject-ifying some internals
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2016-02-16  Christophe Fergeau  <cfergeau@redhat.com>
+
+	Remove redundant argument to vdi_port_read_buf_process
+	The 'port' argument can be determined from VDIPortState, so no need to
+	pass both (through RedsState) to vdi_port_read_buf_process().
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2016-02-16  Jonathon Jongsma  <jjongsma@redhat.com>
+
+	Remove use of global 'reds' from AgentMsgFilter
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	Remove use of global 'reds' from sound.c
+	Pass RedsState variable to snd_attach_(playback|record) and get a
+	reference to this variable when needed by various functions.
+
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	Remove global main_dispatcher variable
+	Requires changing a bunch of internal API to take MainDispatcher
+	arguments, etc. The main dispatcher object is now owned by RedsState,
+	since that is the object that previously created (initialized) it.
+
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	Add red_channel_get_server()
+	Instead of poking into the internals of the RedChannel, provide an
+	accessor.
+
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	Add RedsState reference to RedsStream
+	Allows us to remove use of global 'reds' variable from reds-stream.c.
+	Requires changing the RedsStream constructor to accept a RedsState arg.
+
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+2016-02-16  Frediano Ziglio  <fziglio@redhat.com>
+
+	Remove global 'dispatchers', 'num_active_workers' variables
+	Since these are server-level variables, move them into RedsState.
+	However, num_active_workers was removed because:
+	- each dispatcher always has 1 active worker, so we can determine the
+	  number of active workers by counting the dispatchers
+	- it was never actually set correctly. Even if there was more than one
+	  worker, this variable was always only set to either 0 or 1.
+
+	This change required moving a bunch of helper code into RedsState as
+	well, an providing some RedDispatcher interfaces to access dispatcher
+	information from RedsState.
+
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	move red_dispatcher_on_vm_stop and red_dispatcher_on_vm_start to RedsState
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	remove unused function
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	use list in RedsState for ic_change and sv_change
+	Instead of using list in RedDispatcher (which is going to be removed)
+	use the one in RedsState.
+
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	keep dispatcher list in RedsState
+	This duplicate the other list which will be removed
+
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	move calc_compression_level to reds
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	add RedsState parameter to update_client_mouse_allowed
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	remove num_active_workers
+	This global variable was mainly 1.
+
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+2016-02-15  Frediano Ziglio  <fziglio@redhat.com>
+
+	Revert "dcc: remove not necessary volatile specifications"
+	This reverts commit efe5a0c501d157566522f87a394e29c5290e2185.
+
+	Due to a problem in the compiler this causes compile to fail.
+
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+2016-02-15  Christophe Fergeau  <cfergeau@redhat.com>
+
+	display-channel: Remove extra group_id arguments
+	They are now carried in the appropriate command through
+	QXLReleaseInfoExt, so we don't need to pass them around explicitly.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	Remove CursorItem::group_id
+	Now that the group_id is known to RedCursorCmd, we don't need to store
+	it separately in CursorItem.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	red-parse-qxl: Use QXLReleaseInfoExt instead of QXLReleaseInfo
+	This should allow to avoid moving the group_id separately from the QXL
+	commands all over the code.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	Remove RedGlzDrawable::group_id
+	It's unused.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	Remove Drawable::group_id
+	We can now directly get it from RedDrawable.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	Simplify red_drawable_unref()
+	Now it no longer needs external state in order to destroy the
+	RedDrawable instance when needed, so we can remove this from the
+	prototype.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	Add group_id to RedDrawable
+	Storing a QXLReleaseInfoExt rather than a QXLReleaseInfo in RedDrawable
+	gives us a place to store group_id for free. Since we are building a
+	QXLReleaseInfoExt from QXLReleaseInfo and group_id when destroying a
+	RedDrawable instance, this is a move in the right direction.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	Add QXLInstance member to RedDrawable
+	This allows to get rid of the DisplayChannel parameter to
+	red_drawable_unref()
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	Remove DisplayChannel::red_drawable_count
+	It's only used in a few debug printfs. If we want these stats, we'll
+	have to find a better way than forcing a dependency on a high-level
+	class in a lower-level _unref method just to maintain the stats.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	qxl: Remove unused group_id arg to fill_attr
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2016-02-15  Jonathon Jongsma  <jjongsma@redhat.com>
+
+	Add RedsState arg to all stat functions
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2016-02-12  Frediano Ziglio  <fziglio@redhat.com>
+
+	revert new event-loop code for timers
+	Was causing sporadic crashes.
+	Also cause compatibility problems with RHEL 6.
+
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+	tests: add a new case for event loop timers
+	Check that cancelling a timer the timer callback is not called.
+
+	This can happen in latency code (red-channel.c).
+	In red_channel_client_cancel_ping_timer latency timer is cancelled and
+	state is set to PING_STATE_NONE however if timer was already active what
+	happens is that the red_channel_client_ping_timer is called and the line
+
+	  spice_assert(rcc->latency_monitor.state == PING_STATE_TIMER);
+
+	is triggered causing spice-server to abort.
+	This happens as GLib loop add all active sources to an array but if the
+	timer is deactivated before the event is dispatched the event will be
+	dispatched unless the source is destroyed.
+
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+2016-02-12  Jonathon Jongsma  <jjongsma@redhat.com>
+
+	MainChannel: don't use global 'reds' variable
+	Add RedsState arg to main_channel_new(), and use the 'reds' property
+	that is stored in the base RedChannel struct rather than the global
+	'reds' variable.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	Add RedsState arg to reds_set_migration_dest_info()
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	Add RedsState arg to inputs_channel_new()
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	Store a reference to RedsState in Channel base class
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	Add RedsState arg to smartcard_device_connect()
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2016-02-12  Frediano Ziglio  <fziglio@redhat.com>
+
+	dcc: remove not necessary volatile specifications
+	These automatic variable are used just inside the function.
+
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	CommonChannel: hold a reference to QXLInstance instead of RedWorker
+	CommonChannel does not need to know about RedWorker.
+	This reduce a bit dependencies between objects.
+
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	ccc: remove unused field
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	worker: remove unused red_worker_get_memslot function
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	remove unused structure definition
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	dcc: remove group_id from compression functions
+	The parameter was not used.
+
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	channel: rename misleading functions
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	worker: simplify process loops
+	It was not clear when req_cmd_notification was called.
+	This code reproduce just the old behavior but is easier to read.
+
+	Steps are:
+
+	// original
+
+	if (worker->display_poll_tries < CMD_RING_POLL_RETRIES) {
+	    worker->display_poll_tries++;
+	    worker->event_timeout = MIN(worker->event_timeout, CMD_RING_POLL_TIMEOUT);
+	    return n;
+	}
+	if (worker->display_poll_tries > CMD_RING_POLL_RETRIES ||
+	             worker->qxl->st->qif->req_cmd_notification(worker->qxl)) {
+	    worker->display_poll_tries++;
+	    return n;
+	}
+	continue;
+
+	// split if
+
+	if (worker->display_poll_tries < CMD_RING_POLL_RETRIES) {
+	    worker->display_poll_tries++;
+	    worker->event_timeout = MIN(worker->event_timeout, CMD_RING_POLL_TIMEOUT);
+	    return n;
+	}
+	if (worker->display_poll_tries > CMD_RING_POLL_RETRIES) {
+	    worker->display_poll_tries++;
+	    return n;
+	}
+	if (worker->qxl->st->qif->req_cmd_notification(worker->qxl)) {
+	    worker->display_poll_tries++;
+	    return n;
+	}
+	continue;
+
+	// order inside if
+
+	if (worker->display_poll_tries < CMD_RING_POLL_RETRIES) {
+	    worker->event_timeout = MIN(worker->event_timeout, CMD_RING_POLL_TIMEOUT);
+	    worker->display_poll_tries++;
+	    return n;
+	}
+	if (worker->display_poll_tries > CMD_RING_POLL_RETRIES) {
+	    worker->display_poll_tries++;
+	    return n;
+	}
+	if (worker->qxl->st->qif->req_cmd_notification(worker->qxl)) {
+	    worker->display_poll_tries++;
+	    return n;
+	}
+	continue;
+
+	// consider cases
+
+	if (worker->display_poll_tries < CMD_RING_POLL_RETRIES) {
+	    worker->event_timeout = MIN(worker->event_timeout, CMD_RING_POLL_TIMEOUT);
+	    worker->display_poll_tries++;
+	    return n;
+	}
+	if (worker->display_poll_tries > CMD_RING_POLL_RETRIES) {
+	    worker->display_poll_tries++;
+	    return n;
+	}
+	if (worker->display_poll_tries == CMD_RING_POLL_RETRIES) {
+	    if (worker->qxl->st->qif->req_cmd_notification(worker->qxl)) {
+	        worker->display_poll_tries++;
+	        return n;
+	    }
+	    continue;
+	}
+	// unreachable
+
+	// invert if
+
+	if (worker->display_poll_tries < CMD_RING_POLL_RETRIES) {
+	    worker->event_timeout = MIN(worker->event_timeout, CMD_RING_POLL_TIMEOUT);
+	    worker->display_poll_tries++;
+	    return n;
+	}
+	if (worker->display_poll_tries > CMD_RING_POLL_RETRIES) {
+	    worker->display_poll_tries++;
+	    return n;
+	}
+	if (worker->display_poll_tries == CMD_RING_POLL_RETRIES) {
+	    if (!worker->qxl->st->qif->req_cmd_notification(worker->qxl)) {
+	        continue;
+	    }
+	    worker->display_poll_tries++;
+	    return n;
+	}
+	// unreachable
+
+	// reuse code
+
+	if (worker->display_poll_tries < CMD_RING_POLL_RETRIES) {
+	    worker->event_timeout = MIN(worker->event_timeout, CMD_RING_POLL_TIMEOUT);
+	} else if (worker->display_poll_tries > CMD_RING_POLL_RETRIES) {
+	} else if (worker->display_poll_tries == CMD_RING_POLL_RETRIES) {
+	    if (!worker->qxl->st->qif->req_cmd_notification(worker->qxl)) {
+	        continue;
+	    }
+	}
+	worker->display_poll_tries++;
+	return n;
+
+	// remove empty if
+
+	if (worker->display_poll_tries < CMD_RING_POLL_RETRIES) {
+	    worker->event_timeout = MIN(worker->event_timeout, CMD_RING_POLL_TIMEOUT);
+	} else if (worker->display_poll_tries == CMD_RING_POLL_RETRIES) {
+	    if (!worker->qxl->st->qif->req_cmd_notification(worker->qxl)) {
+	        continue;
+	    }
+	}
+	worker->display_poll_tries++;
+	return n;
+
+	// collapse two conditions
+
+	if (worker->display_poll_tries < CMD_RING_POLL_RETRIES) {
+	    worker->event_timeout = MIN(worker->event_timeout, CMD_RING_POLL_TIMEOUT);
+	} else if (worker->display_poll_tries == CMD_RING_POLL_RETRIES &&
+	           !worker->qxl->st->qif->req_cmd_notification(worker->qxl)) {
+	    continue;
+	}
+	worker->display_poll_tries++;
+	return n;
+
+	Acked-by: Jonathon Jongsma <jjongsma at redhat.com>
+
+2016-02-11  Frediano Ziglio  <fziglio@redhat.com>
+
+	dispatcher: remove unused async_commands ring
+	The only usage of this ring was to have a message when there was no
+	commands on the list.
+
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	Store 'renderers' as GArray in RedsState
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2016-02-11  Jonathon Jongsma  <jjongsma@redhat.com>
+
+	Add RedsState arg to activate_modifiers_watch()
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	Add RedsState arg to spicevmc_device_connect|disconnect()
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	Add RedsState arg to red_on_main_agent_tokens()
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	Store a reference to RedsState in RedsMigTargetClient
+	This allows RedsMigTargetClient methods to use local variables rather
+	than the global 'reds' variable
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	spice_server_kbd_leds: don't use global 'reds'
+	Store a reference to the RedsState server in the keyboard state struct
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	Add reference to server in RedClient
+	Allows client methods to not use global 'reds' variable
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	Remove use of global 'reds' from VDIReadBuf functions
+	Add a new 'state' property to VDIReadBuf so that we can refer back to
+	the VDIPortState struct from the readbuf functions.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	char-device: use local 'reds' variable
+	Store a reference to the server in the SpiceCharDeviceState struct and
+	use that rather than the global 'reds' variable
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	Add RedsState member to RedLinkInfo
+	This allows us to use local 'reds' variables in all of the various async
+	callbacks rather than using the global 'reds' variable.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	Move 'core' into RedsState struct
+	Also add reds_get_core_interface() accessor for external use.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2016-02-10  Christophe Fergeau  <cfergeau@redhat.com>
+
+	reds: Pass RedState instance to reds_accept()
+	Rather than relying on a global 'reds' variable, we can pass the needed
+	instance through the callback user data.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	reds: Make sure accept_ssl_connection() gets a reds instance
+	Commit 3a66b75 changed reds_accept_ssl_connection() to expect a RedState
+	instance when its called, but the core->watch_add() which is calling it
+	was not changed accordingly. This causes a crash when connecting through
+	SSL.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2016-02-09  Marc-André Lureau  <marcandre.lureau@gmail.com>
+
+	Handle GL_DRAW_DONE
+	When a client is done with drawing and sends
+	SPICE_MSGC_DISPLAY_GL_DRAW_DONE, or when it ends, update the number of
+	async counts.
+
+	[reduce critical message to a warning; do not reset gl_draw_ongoing
+	 - Frediano Ziglio]
+
+	Handle GL_DRAW messages
+	Create an async, and marshall the GL_DRAW message. Count number of
+	clients, and wait until gl_draw_async_count is 0 to complete the async.
+	The count is going to be updated in the following patch when the client
+	is done with the draw.
+
+	[removed unused sent field; move gl_draw_async_count to DisplayChannel
+	 - Frediano Ziglio]
+
+	Send current GL scanout to new client
+
+	Handle GL_SCANOUT messages
+	Go through dispatcher and marshall scanout message. Since the marshaller
+	and the QXL state are manipulated from different threads, add a mutex to
+	protect the current scanout.
+
+	Add new spice-gl stubs API
+	- spice_qxl_gl_scanout() to take the current scanout
+
+	- spice_qxl_gl_draw_async() to draw the scanout, is like other Spice async
+	  functions, it takes a cookie and will return in the
+	  QXLInterface.async_complete()
+
+	Two new fields are also added to QXLState, in order to save the current
+	scanout, and the pending async.
+
+	A scanout can't be updated if there are pending draw atm. Discarding
+	outdated draws is left as a future improvement to allow updating the
+	scanout without waiting for draw async to be done.
+
+	[make QXL function names more coherent - Frediano Ziglio]
+
+	red-channel: return number of created pipe items
+	This is useful in the following patches to count the number of replies
+	to wait for.
+
+2016-02-09  Jonathon Jongsma  <jjongsma@redhat.com>
+
+	Add RedsState arg to reds_handle_channel_event()
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	Add RedsState arg to reds_init_client_[ssl_]connection()
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	Rename vdi_port_read_buf_get() to match convention
+	Since this is technically a RedsState method, name it as such.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2016-02-05  Frediano Ziglio  <fziglio@redhat.com>
+
+	record: save real time during recording
+	Instead of using CPU time use a timer depending on real times.
+	Currently that time in the record log is not used.
+	However if we want to reproduce problems with stream would be useful
+	to have real times instead.
+
+	Acked-by: Pavel Grunt <pgrunt@redhat.com>
+
+	channel: fix typo in comment
+	Acked-by: Victor Toso <victortoso@redhat.com>
+
+2016-02-04  Jonathon Jongsma  <jjongsma@redhat.com>
+
+	Move ssl_parameters to RedsState struct
+	Removing more global variables
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	Move agent_mouse to RedsState struct
+	Required adding a RedsState arg to reds_get_agent_mouse()
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	Move streaming_video to RedsState struct
+	Also requires adding reds_get_streaming_video() accessor so that other
+	files can check this value.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2016-02-03  Marc-Andre Lureau  <marcandre.lureau@gmail.com>
+
+	tests: link test-qxl-parsing with libserver
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2016-02-03  Frediano Ziglio  <fziglio@redhat.com>
+
+	worker: don't do too much polling
+	Now that processing is correctly restored there is no need to keep
+	polling to avoid main loop hangs. Reduce the polling count to 1
+	(just try once).
+	This reduce cpu usage if guests are mainly idle.
+	If you consider 100 guests waiting to login with cursor blinking
+	and considering the polling was done 200 times every 10ms (maximum)
+	just the cursor blinking was causing 10100 loop iterations per second
+	while now only 200 are needed (considering cursor blinking every
+	second).
+
+	Signed-by: Frediano Ziglio <figlio@redhat.com>
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	worker: avoid blocking loop
+	Make sure we process commands after we can send data to client.
+	If during processing we detected that there was too much data in the
+	clients queues the processing of commands just stop till the next
+	iteration.
+	However if all data are pushed in a single iteration of the loop
+	and commands were already processed there was the (remote) possibility
+	that the loop hangs till a separate event (like a screen resize on
+	client window) arrive.
+	I manage to reproduce and after half an hour no events arrived.
+	This patch detect that processing was stuck and now we can process new
+	commands and force a new iteration.
+
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	replay: remove a message that could be caused by a race condition
+	The req_cmd_notification callback is called by spice-server when it
+	has processed all commands and wants to be notified (by a wakeup) that
+	new commands have been appended to the command queue.
+	Replay utility tries to fill the commands when it detects that
+	spice-server is trying to read commands but there are no more commands.
+	However, new commands are appended in a separate thread so if the main
+	red worker loop on spice-server is really tight this request can
+	happen.
+	Avoid printing any message on this condition, message will be appended
+	and loop woken up when replay code can do it.
+
+	Signed-by: Frediano Ziglio <figlio@redhat.com>
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	worker: push data when clients can receive them
+	During every iteration of the main worker loop, outgoing data was pushed to
+	the client. However, there was no guarantee that the loop would be woken up
+	in every situation. So there were some conditions where the loop would stop
+	iterating until a new event was sent.
+
+	Currently, the events that can wake up the main worker loop include:
+	 - data from dispatcher (including wakeups from the guest)
+	 - data from clients
+	 - timeouts on a stream
+	 - other timeouts
+	 - polling
+
+	This patch adds a new wakeup event: when we have items that are queued to
+	be sent to a client, we set up a watch event for writing data to the
+	client. If no items are waiting to be sent, this watch will be disabled.
+	This allows us to remove the explicit push from the main worker loop.
+
+	This has some advantages:
+	 - it could lower latency as we don't have to wait for a polling timeout.
+	   From my experiments using a tight loop (so not really the ideal
+	   condition to see the improvements) the total time was reduced by 2-3%)
+	 - helps reduce the possibility of hanging loops
+	 - avoids having to scan all clients to detect which one can accept data.
+
+	Signed-by: Frediano Ziglio <figlio@redhat.com>
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+2016-02-03  Jonathon Jongsma  <jjongsma@redhat.com>
+
+	Move zlib_glz_state to RedsState struct
+	Also required adding reds_get_zlib_glz_state() for external access.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	Move exit_on_disconnect to RedsState struct
+	Removing more global variables
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+	Acked-by: Pavel Grunt <pgrunt@redhat.com>
+
+	Move agent_file_xfer to RedsState struct
+	Removing more global variables
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	Move agent_copypaste to RedsState struct
+	Removing more global variables
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2016-02-03  Frediano Ziglio  <fziglio@redhat.com>
+
+	compatibility patch for event loop
+	This patch use old code to implement timer events.
+	The new version use some function from GLib 2.34 however some systems
+	(like RHEL 6) have former GLib version (RHEL 6 has GLib 2.28 installed)
+
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+	spice-common: pick up fix for uninitialized field
+	Acked-by: Pavel Grunt <pgrunt@redhat.com>
+
+2016-02-03  Jonathon Jongsma  <jjongsma@redhat.com>
+
+	Remove use of global 'reds' var from spice_server_remove_interface()
+	Since this is public API, we can't easily change the signature of the
+	function to take a RedsState argument, so instead we apply a hack and
+	store the reds argument inside the device state struct when the
+	interface is added, and retrieve it for use later when it is removed.
+
+	Acked-by: Pavel Grunt <pgrunt@redhat.com>
+
+	Move ticketing_enabled to RedsState struct
+	Removing more global variables
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2016-02-02  Jonathon Jongsma  <jjongsma@redhat.com>
+
+	Move jpeg_state to RedsState struct
+	Also required adding reds_get_jpeg_state() for external access.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	Move image_compression to RedsState struct
+	Removing more global variables
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	Make default_security and channels_security non-global
+	Move them into the RedsState struct, adjust functions that use these
+	variables to take a RedsState arg.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2016-02-02  Frediano Ziglio  <fziglio@redhat.com>
+
+	red-channel: send marshaller message fd
+	Send the fd associated to the last message sent.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	Update spice-common
+	Needed to have the updated spice_marshaller_get_fd function
+
+2016-02-02  Marc-Andre Lureau  <marcandre.lureau@gmail.com>
+
+	tests: make sure that the default rule builds all tests
+	The default rule being "all", it builds noinst_PROGRAMS but not
+	check_PROGRAMS. Let's build all the tests by default.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2016-02-01  Victor Toso  <victortoso@redhat.com>
+
+	reds: remove unused structs
+	RedsMigSpiceMessage and RedsMigCertPubKeyInfo
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2016-02-01  Frediano Ziglio  <fziglio@redhat.com>
+
+	reds: constify renderers_info array
+	Acked-by: Pavel Grunt <pgrunt@redhat.com>
+	Acked-by: Victor Toso <victortoso@redhat.com>
+
+	reds: remove default_renderer as field
+	Was used to just assure there was at least one renderer in the list.
+
+	Acked-by: Pavel Grunt <pgrunt@redhat.com>
+
+2016-02-01  Jonathon Jongsma  <jjongsma@redhat.com>
+
+	Move spice_uuid, spice_uuid_is_set to RedsState struct
+	Removing more global variables
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	Move spice_name to RedsState struct
+	Remove more global variables
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	Move sasl_enabled, sasl_appname to RedsState struct
+	Removing more global variables
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	Move taTicket to RedsState struct
+	Removing more global variables
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	Move spice_family to RedsState struct
+	Removing more global variables
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	Move spice_addr to RedsState struct
+	Removing more global variables
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	Move migration_interface to RedsState struct
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	Move vdagent to RedsState struct
+	Also change API of reds_has_vdagent() to take RedsState arg.  Removes
+	another global variable.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	Move spice_listen_socket_fd to RedsState struct
+	Removing more global variables
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2016-01-29  Jonathon Jongsma  <jjongsma@redhat.com>
+
+	Move spice_secure_port to RedsState struct
+	removing more global variables
+
+	Acked-by: Pavel Grunt <pgrunt@redhat.com>
+
+	Move spice_port to RedsState struct
+	Remove another global variable
+
+	Acked-by: Pavel Grunt <pgrunt@redhat.com>
+
+	Change init_vd_agent_resources() to take RedsState arg
+	Acked-by: Pavel Grunt <pgrunt@redhat.com>
+
+2016-01-29  Frediano Ziglio  <fziglio@redhat.com>
+
+	worker: unify flush_cursor_commands and flush_display_commands
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+2016-01-28  Frediano Ziglio  <fziglio@redhat.com>
+
+	worker: use glib main loop
+	Use the glib mainloop instead of writing our own. The glib loop is both
+	cleaner to use and is more extensible. It is also very mature and
+	reduces the maintenance burden on the spice server.
+
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+2016-01-28  Jonathon Jongsma  <jjongsma@redhat.com>
+
+	Move default_renderer into RedsState
+	Not global.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	main_channel_init() -> main_channel_new()
+	Rename to make function name more consistent
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+	Acked-by: Pavel Grunt <pgrunt@redhat.com>
+
+	inputs_init() -> inputs_channel_new()
+	Rename function to be more consistent
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+	Acked-by: Pavel Grunt <pgrunt@redhat.com>
+
+	Remove global inputs channel
+	Make the RedsState object own an InputsChannel object rather than
+	having a global inputs channel. This means changing a lot of
+	inputs-related API to take an InputsChannel* argument and moving the
+	keyboard, mouse, and tablet objects into the InputsChannel object.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2016-01-28  Frediano Ziglio  <fziglio@redhat.com>
+
+	worker: remove useless check
+	display_channel is never NULL.
+
+	Acked-by: Jonathon Jongsma <jjongsma at redhat.com>
+
+	worker: remove useless test
+	red_channel_max_pipe_size returns 0 if no client (channel disconnected)
+	no need to check if cursor_channel/display_channel are NULL or
+	connected.
+
+	Acked-by: Jonathon Jongsma <jjongsma at redhat.com>
+
+	worker: do not leak cursor after disconnecting clients
+	Calling cursor_channel_disconnect does not free cursor_display
+	so this causes a leak.
+	Is the only code where this pointer is reset preventing any
+	further cursor channel connection. If a client is lazy reading
+	cursor data during the flush connection is closed and further clients
+	won't be able to use the cursor.
+	This also prevents future use of a NULL pointer.
+
+	Acked-by: Jonathon Jongsma <jjongsma at redhat.com>
+
+2016-01-27  Frediano Ziglio  <fziglio@redhat.com>
+
+	qxl: inline documentation for get_command and req_cmd_notification
+
+2016-01-26  Frediano Ziglio  <fziglio@redhat.com>
+
+	worker: improved implementation of SpiceTimer
+	Use a custom GSource.
+	This to avoid having to allocate a timer all the time we add one.
+
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+	replay: do not wake up loop too much
+	Send wakeups only when a command is available.
+	This emulate better what a guest driver should do (append the command
+	to the ring and then signal).
+
+	Acked-by: Pavel Grunt <pgrunt@redhat.com>
+
+	worker: use core interface to create watch
+	This increase code reuse and make Glib integration more straight forward.
+
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+	worker: remove empty statement at line end
+	Acked-by: Pavel Grunt <pgrunt@redhat.com>
+
+	worker: use variable already set at beginning of loops
+	This is mainly question of style.
+	Instead of repeating same conversion use the variable we set at the
+	beginning of the function.
+	Note also that I used same name to make the two functions more
+	similar.
+
+	Acked-by: Pavel Grunt <pgrunt@redhat.com>
+
+	worker: remove max_pipe_size constant parameter
+	All checks for full channel pipes have to be consistents
+	so there is no point in passing as a parameter.
+
+	Acked-by: Pavel Grunt <pgrunt@redhat.com>
+
+2016-01-22  Marc-Andre Lureau  <marcandre.lureau@gmail.com>
+
+	channel: do not call pipe_add with null items
+	If the creator was not able to produce the item, no need to call
+	pipe_add().
+
+	Acked-by: Frediano Ziglio <fziglio@redhat>
+
+	channel: document pipes_create_batch() function
+	Rename callback to pipe_add, and document the arguments.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat>
+
+2016-01-22  Jonathon Jongsma  <jjongsma@redhat.com>
+
+	Replay: report error if we don't read the correct file header
+	The replay file should start with a header such as
+	  SPICE_REPLAY 1
+
+	Instead of soldiering on if we don't encounter this header, print a
+	warning and return NULL.  Also exit with a failure if spice_replay_new()
+	returns a NULL object in main.
+
+	Acked-by: Pavel Grunt <pgrunt@redhat.com>
+
+2016-01-21  Jonathon Jongsma  <jjongsma@redhat.com>
+
+	Change some functions to take RedsState arg
+	In preparation for getting rid of the global 'reds' variable, we need to
+	pass the RedsState variable to all functions where it is needed. For now
+	the callers just pass in the global reds variable.
+
+	Functions changed:
+	- reds_mig_fill_wait_disconnect;
+	- reds_mig_cleanup_wait_disconnect;
+	- reds_mig_remove_wait_disconnect_client;
+	- reds_migrate_channels_seamless;
+	- reds_mig_finished;
+	- reds_mig_switch;
+	- reds_enable_mm_time;
+	- reds_disable_mm_time;
+	- attach_to_red_agent;
+	- reds_char_device_add_state;
+	- reds_char_device_remove_state;
+	- reds_on_char_device_state_destroy;
+	- spice_server_char_device_remove_interface;
+	- migrate_timeout.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2016-01-21  Christophe Fergeau  <cfergeau@redhat.com>
+
+	event-loop: Remove template
+	Since SpiceCoreInterfaceInternal is a private data structure, we can
+	extend it as we see fit without breaking ABI. In particular, adding a
+	GMainContext member to it allows us to remove the need for
+	the event loop template which is currently included in the
+	basic_event_loop.c test file.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	test-loop: Improve basic_event_loop base_{timer, watch}_add
+	They call the functions provided by event_loop_core, but with a NULL
+	SpiceCoreInterfaceInternal parameter. It makes more sense to pass
+	event_loop_core rather than NULL.
+	This will allow to pass the GMainContext to be used through
+	SpiceCoreInterfaceInternal rather than through a template parameter.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2016-01-20  Pavel Grunt  <pgrunt@redhat.com>
+
+	dcc: make dcc_compress_image_*() private
+	Reviewed-by: Victor Toso <victortoso@redhat.com>
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	dcc-send: Use dcc_compress_image to compress image
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	dcc_compress_image: Handle NULL drawable
+	It will be used in the following commit.
+	The GLZ compression cannot be used when the drawable is NULL.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	build-sys: Update spice-common submodule
+
+2016-01-20  Jonathon Jongsma  <jjongsma@redhat.com>
+
+	Change some functions to take RedsState arg
+	In preparation for getting rid of the global 'reds' variable, we need to
+	pass the RedsState variable to all functions where it is needed. For now
+	the callers just pass in the global reds variable.
+
+	Functions changed:
+	- reds_link_mig_target_channels;
+	- reds_on_migrate_dst_set_seamless;
+	- reds_on_client_seamless_migrate_complete;
+	- reds_on_client_semi_seamless_migrate_complete;
+	- reds_handle_other_links;
+	- reds_handle_link;
+	- reds_send_mm_time;
+	- reds_set_client_mm_time_latency;
+	- reds_init_net;
+	- do_spice_init;
+	- reds_init_ssl;
+	- on_activating_ticketing;
+	- reds_mig_release to take RedsState arg
+	- reds_mig_started.
+
+	Acked-by: Pavel Grunt <pgrunt@redhat.com>
+
+	Change some functions to take RedsState arg
+	In preparation for getting rid of the global 'reds' variable, we need to
+	pass the RedsState variable to all functions where it is needed. For now
+	the callers just pass in the global reds variable.
+
+	Functions changed:
+	- reds_on_main_migrate_connected;
+	- reds_on_main_mouse_mode_request;
+	- reds_on_main_channel_migrate;
+	- reds_marshall_migrate_data;
+	- reds_agent_state_restore;
+	- reds_handle_migrate_data;
+	- reds_send_link_ack;
+	- reds_mig_target_client_add;
+	- reds_mig_target_client_find;
+	- reds_mig_target_client_free;
+	- reds_mig_target_client_disconnect_all;
+	- reds_find_client;
+	- reds_get_client;
+	- reds_handle_main_link;
+	- reds_set_client_mouse_allowed.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2016-01-20  Frediano Ziglio  <fziglio@redhat.com>
+
+	channel: do not free rcc->stream in red_channel_client_disconnect
+	This fixes a crash if red_channel_client disconnect is called
+	handling a message.
+	This can happen for instance while handling SPICE_MSGC_ACK which calls
+	red_channel_client_push which tries to detect write errors while writing
+	to a socket (for instance socket disconnection).
+	Messages are read in a loop and red_channel_client_disconnect would
+	cause rcc->stream to be NULL which will result in a use-after-free
+	problem (stream in red_peer_handle_incoming will use cached stream value).
+
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	tests: test removed triggered timers are not called
+	This could happen for instance if a given timer remove all clients
+	which have associated timers.
+
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	tests: add a test for event loop
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	tests: extract code for event loop
+	This code will be reused for main loop
+
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	tests: do not use default loop context
+	Make sure we don't handle event reserved to other loop contexts.
+
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+2016-01-19  Christophe Fergeau  <cfergeau@redhat.com>
+
+	Remove use of spice_warn_if()
+	spice_warn_if_fail() is doing the same thing except for the inverted
+	condition. spice_warn_if() is being removed from spice-common to avoid
+	having potentially confusing redundancy.
+
+2016-01-19  Jonathon Jongsma  <jjongsma@redhat.com>
+
+	reds_num_of_clients() -> reds_get_n_clients()
+	More consistent with glib naming conventions. Also make the function
+	static since it's not used outside of this source file.
+
+	Acked-by: Pavel Grunt <pgrunt@redhat.com>
+
+	reds_num_of_channels() -> reds_get_n_channels()
+	More consistent with glib naming conventions.
+
+	Acked-by: Pavel Grunt <pgrunt@redhat.com>
+
+	Change some functions to take RedsState arg
+	In preparation for getting rid of the global 'reds' variable, we need to
+	pass the RedsState variable to all functions where it is needed. For now
+	the callers just pass in the global reds variable.
+
+	Functions changed:
+	- vdi_port_read_buf_process;
+	- vdi_port_read_buf_get;
+	- vdi_port_read_buf_unref;
+	- reds_handle_agent_mouse_event;
+	- reds_num_of_channels;
+	- reds_num_of_clients;
+	- reds_fill_channels;
+	- reds_on_main_agent_start;
+	- reds_get_agent_data_buffer;
+	- reds_release_agent_data_buffer;
+	- reds_client_monitors_config_cleanup;
+	- red_on_main_agent_data.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+	Acked-by: Pavel Grunt <pgrunt@redhat.com>
+
+2016-01-19  Frediano Ziglio  <fziglio@redhat.com>
+
+	tests: remove leaks in test-qxl-parsing
+	This make happy address sanitizer during make check.
+	Otherwise memory leak detector can keep in and make tests fails.
+
+	Acked-by: Pavel Grunt <pgrunt@redhat.com>
+
+2016-01-19  Jonathon Jongsma  <jjongsma@redhat.com>
+
+	Pass 'reds' as opaque data in vdi port char device
+	This allows us to access the RedsState variable non-globally without
+	changing the signature of the callback functions.
+
+	Acked-by: Pavel Grunt <pgrunt@redhat.com>
+
+2016-01-18  Jonathon Jongsma  <jjongsma@redhat.com>
+
+	Change some functions to take RedsState arg
+	In preparation for getting rid of the global 'reds' variable, we need to
+	pass the RedsState variable to all functions where it is needed. For now
+	the callers just pass in the global reds variable.
+
+	Functions changed:
+	- reds_register_channel;
+	- reds_unregister_channel;
+	- reds_get_mouse_mode;
+	- reds_set_mouse_mode;
+	- reds_update_mouse_mode;
+	- reds_agent_remove;
+	- reds_find_channel;
+	- reds_mig_cleanup;
+	- reds_reset_vdp;
+	- reds_main_channel_connected;
+	- reds_client_disconnect;
+	- reds_disconnect;
+	- reds_mig_disconnect.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+	Acked-by: Pavel Grunt <pgrunt@redhat.com>
+
+2016-01-15  Frediano Ziglio  <fziglio@redhat.com>
+
+	replay: better documentation for -C and -S options
+	Document all possible values
+
+	Acked-by: Pavel Grunt <pgrunt@redhat.com>
+
+	replay: add streaming setting option
+	Add -S to allow to set a video streaming rule.
+
+	Acked-by: Pavel Grunt <pgrunt@redhat.com>
+
+	utils: handle errors writing to bitmap file
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+	utils: fix endianess issues writing bitmap file
+	Do not print directly binary data but serialize in a portable way
+	and then use write functions.
+
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+	utils: use always fwrite to write bitmap
+	Make easier to check error on next patch
+
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+2016-01-15  Jonathon Jongsma  <jjongsma@redhat.com>
+
+	Make global 'reds' extern
+	This allows it to be accessed from other files. This is a temporary step
+	toward getting rid of the global-ness of this variable, and it allows us
+	to update the function signature bit-by-bit.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2016-01-15  Marc-Andre Lureau  <marcandre.lureau@gmail.com>
+
+	stream-test: add batch test
+	Check that two consecutive msgfd are read back from two different reads.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2016-01-15  Frediano Ziglio  <fziglio@redhat.com>
+
+	replay: use spice_malloc(0) instead of raw malloc
+	These function report memory allocation errors.
+	spice_malloc0 also reset memory after allocation.
+
+	Acked-by: Victor Toso <victortoso@redhat.com>
+
+2016-01-15  Marc-Andre Lureau  <marcandre.lureau@gmail.com>
+
+	build-sys: build a noinst libtest.a to link to
+	Group the test utility in a library, to avoid repeating the same
+	sources. In this case, automake already figues out what the source of
+	the programs to build is.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2016-01-15  Frediano Ziglio  <fziglio@redhat.com>
+
+	replay: remove command line memory leaks
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+2016-01-14  Frediano Ziglio  <fziglio@redhat.com>
+
+	build-sys: update spice-common
+	This is an update to fix build issues with spice-protocol.git.
+	generated_server_demarshallers.c: In function
+	‘parse_msgc_display_gl_draw_done’:
+	generated_server_demarshallers.c:767:23: error:
+	‘SpiceMsgcDisplayGlDrawDone’ undeclared (first use in this function)
+	     mem_size = sizeof(SpiceMsgcDisplayGlDrawDone);
+	...
+
+	Also needed for upcoming gl-scanout messages.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2016-01-14  Christophe Fergeau  <cfergeau@redhat.com>
+
+	Remove GSlice use
+	It's being slowly deprecated in glib
+	https://bugzilla.gnome.org/show_bug.cgi?id=754687
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	Remove compress_buf_new
+	This commit reworks a bit the management of RedCompressBuf so that
+	compress_buf_new/compress_buf_free become unneeded.
+	Since d25d6ca0 and the introduction of encoder_data_reset,
+	compress_buf_free is already unused outside of dcc-encoders.c and could
+	be static. This in turn makes compress_buf_new a bit odd as the matching
+	destructor is never used in dcc.c.
+	This commit introduces an encoder_data_init() method which is hiding
+	the initialization of the EncoderData structure from the dcc.c code,
+	allowing to get rid of compress_buf_new() calls from dcc.c code.
+
+	It also uses this as an opportunity to stop using GSlice for
+	RedCompressBuf.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2016-01-14  Frediano Ziglio  <fziglio@redhat.com>
+
+	channel: simplify red_channel_client_send_item
+	Acked-by: Pavel Grunt <pgrunt@redhat.com>
+	Acked-by: Victor Toso <victortoso@redhat.com>
+
+2016-01-14  Marc-Andre Lureau  <marcandre.lureau@gmail.com>
+
+	tests: add fdpass stream test
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2016-01-14  Marc-André Lureau  <mlureau@redhat.com>
+
+	reds-stream: add send_msgfd()
+	A new function to send fd with unix socket anciliary data.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2016-01-14  Marc-Andre Lureau  <marcandre.lureau@gmail.com>
+
+	build-sys: build a utility libserver.la
+	This allow tests programs to link with statically built library to access all symbols
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2016-01-13  Christophe Fergeau  <cfergeau@redhat.com>
+
+	Update NEWS for 0.13.0 release
+
+	spicevmc: Drop unsent data on client disconnection
+	When redirecting a USB webcam over a slow link, it's currently possible
+	to hit an assertion in spice-server by running cheese (application using
+	the webcam), killing the client with ctrl+c and then restarting the
+	client:
+	qemu-kvm: spicevmc.c:324: spicevmc_red_channel_alloc_msg_rcv_buf:
+	Assertion `!state->recv_from_client_buf' failed.
+
+	This happens when red_peer_handle_incoming tries to allocate memory for
+	a message using spicevmc:
+	handler->msg = handler->cb->alloc_msg_buf(handler->opaque, msg_type,
+	msg_size);
+
+	red_peer_handle_incoming() is called when there is client data to be
+	read, and does
+	- call alloc_msg_buf() to allocate memory for the message
+	- read the message
+	- if the read was partial, return early, the main loop will call again
+	  red_peer_handle_incoming() when there is more data available for that
+	  channel
+	- parse the message
+	- call release_msg_buf() to free the message
+
+	For channels based on spicevmc (usbredir and port), alloc_msg_buf()
+	stores message data in SpiceVmcState::recv_from_client_buf and before
+	allocating new memory, it asserts that it's NULL.
+
+	This is what causes this crash in the following scenario:
+	- SpiceVmc::alloc_msg_buf() is called and allocates memory for a new
+	  message in SpiceVmcState::recv_from_client_buf
+	- red_peer_handle_incoming() returns early as all the spicevmc message
+	  data hasn't been received yet
+	- the client gets killed
+	- the main channel notices the disconnect and calls
+	  main_dispatcher_client_disconnect() which will disconnect all the
+	  channels
+	- SpiceVmc::on_disconnect is called
+	- after the new client connects, SpiceVmc::alloc_msg_buf() is called,
+	  notices that SpiceVmcState::recv_from_client_buf is already set, and
+	  asserts()
+
+	This commit makes sure the partial SpiceVmcState::recv_from_client_buf
+	data is cleared on disconnect so that the assert does not trigger.
+
+	This fixes https://bugzilla.redhat.com/show_bug.cgi?id=1264113
+
+2016-01-12  Sunny Shin  <sunny4s.git@gmail.com>
+
+	channel: add option tcp keepalive timeout to channels
+
+2016-01-12  Christophe Fergeau  <cfergeau@redhat.com>
+
+	stat: Make stat_compress_init/stat_init the same
+	When COMPRESS_STAT is not set, and RED_WORKER_STAT is set,
+	stat_time() will be a no-op, but stat_start_time_init() will try to use
+	stat_info_t::clock. This causes a compile warning on 32 bit arches (not
+	sure why not on 64 bit builds), as well as an error from valgrind.
+
+	Since stat_time() and stat_compress_time() are both doing the same work,
+	this commit makes them the same function, which ensures
+	stat_info_t::clock will be set and stat_start_time_init() can be used
+	regardless of the _init() method which is called.
+
+2016-01-12  Francois Gouget  <fgouget@codeweavers.com>
+
+	server: Fix conversions between QXLPHYSICAL and pointers
+	This avoids compilation errors with -Werror on 32 bit systems as the
+	pointer size differs from that of a QXLPHYSICAL.
+
+	server: Simplify the next chunk initialization in red_replay_data_chunks()
+
+	server: Fix a pointer to uint64_t cast in spice_replay_next_cmd()
+	This avoids a compilation error with -Werror on 32 bit systems as the
+	pointer size differs from that of an uint64_t.
+
+2016-01-11  Frediano Ziglio  <fziglio@redhat.com>
+
+	channel: use iface parameter to distinguish interface context
+	Now we can use the iface parameter to distinguish the context instead
+	of doing strange assumption on opaque and its state.
+
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+	channel: add interface parameters to SpiceCoreInterfaceInternal
+	This patch and previous ones want to solve the problem of not having a
+	context in SpiceCoreInterface. SpiceCoreInterface defines a set of
+	callbacks to handle events in spice-server. These callbacks allow to
+	handle timers, watch for file descriptors and send channel events.
+	All these callbacks do not accept a context (usually in C passed as a
+	void* parameter) so it is hard for them to differentiate the interface
+	specified.
+	Unfortunately this structure is used even internally from different
+	contexts for instance every RedWorker thread has a different context. To
+	solve this issue some workarounds are used. Currently for timers a variable
+	depending on the current thread is used while for watches the opaque
+	parameter to pass to the event callback is used as it currently points just
+	to RedChannelClient structure.  This however imposes some implicit
+	maintainance problem in the future. What happens for instance if for some
+	reason a timer is registered during worker initialization, run in another
+	thread? What if we decide to register a file descriptor callback for
+	something not a RedChannelClient?  Could be that the program will run
+	without any issue till some bytes change and weird things could happen.
+
+	The implementation of this solution is done implementing an internal "core"
+	interface that has context specific and use it to differentiate the
+	context instead of relying on some other, hard to maintain, detail. Then an
+	adapter structure (name inpired to the adapter pattern) will provide the
+	internal core interface using the external, public, definition (in the
+	future this technique can be used to extend the external interface without
+	breaking the ABI).
+
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+	channel: build adapter for public core interface
+	Add wrapper functions for SpiceCoreInterface in order to present
+	a SpiceCoreInterfaceInternal. These functions just expect
+	SpiceCoreInterfaceInternal API and forward request to
+	SpiceCoreInterface.
+	This allows to change ABI details of internal one.
+
+	See comments in "channel: add interface parameters to
+	SpiceCoreInterfaceInternal" patch.
+
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+	channel: add a new internal SpiceCoreInterface
+	Define an internal structure that matches 100% the ABI of the public one.
+	The structure will be changed by following patches.
+	See comments in "channel: add interface parameters to
+	SpiceCoreInterfaceInternal" patch.
+
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+	stats: use CLOCK_THREAD_CPUTIME_ID for cpu statistics
+	Use CLOCK_THREAD_CPUTIME_ID instead of getting the clock
+	with pthread_getcpuclockid.
+	This avoids to call red_worker_get_clockid. This function returns
+	uninitialized value at the time DisplayChannel is built resulting in setting
+	statistics to CLOCK_REALTIME (which is 0) instead to cpu time as expected.
+
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+	dcc: avoid to report errors triggered by client
+	Client can always send report even if a stream is not available.
+
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+2016-01-08  Frediano Ziglio  <fziglio@redhat.com>
+
+	add some tests for cursors parsing
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+	add test for QXL parsing functions
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+	check properly if red_get_data_chunks fails or not
+	Instead of returning 0 which could be a valid value returns an invalid
+	one and check on the caller.
+
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+	prevent integer overflow in red_get_clip_rects
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+	dcc: write and use a new encoder_data_reset function to clean buffers
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+	dcc: free glz buffer after zlib compression
+	For zlib+glz compression image if first compressed with glz then the
+	resulting buffer is compressed again with zlib then the buffer from
+	zlib is returned to the caller.
+	However the temporary glz buffer was not freed resulting in a memory
+	leak.
+
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+2016-01-08  Eduardo Lima (Etrunko)  <etrunko@redhat.com>
+
+	server: Fix tests Makefile
+	As reported in https://bugs.freedesktop.org/show_bug.cgi?id=93520, the
+	build from git is failing in Archlinux systems with undefined
+	references to glib symbols.
+
+	This patch fixes the problem by simply reordering the order libraries
+	will be linked. Also, removes duplicate $(GLIB_LIBS) variable.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2016-01-08  Pavel Grunt  <pgrunt@redhat.com>
+
+	syntax-check: Fix sc_cast_of_argument_to_free
+	red_replay_qxl.c was renamed in 525cd67be7c5
+
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+	syntax-check: Remove empty line at EOF
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+	syntax-check: Fix missing AUTHORS
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+2015-12-22  Frediano Ziglio  <fziglio@redhat.com>
+
+	replay: better help for -s option
+	-s accepts an option to delay command queueing.
+
+	Acked-by: Marc-André Lureau <mlureau@redhat.com>
+
+2015-12-21  Marc-André Lureau  <mlureau@redhat.com>
+
+	reds-stream: add reds_stream_is_plain_unix()
+	Utility function used in follow-up code.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2015-12-21  Pavel Grunt  <pgrunt@redhat.com>
+
+	build-sys: Use sasl check from spice-common
+	Support only libsasl2 providing libsasl2.pc file
+
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+2015-12-21  Marc-Andre Lureau  <marcandre.lureau@gmail.com>
+
+	tests: remove test_util.h
+	Replace ASSERT() with spice_assert().
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2015-12-21  Frediano Ziglio  <fziglio@redhat.com>
+
+	tests: remove unused macro
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+2015-12-17  Lukas Venhoda  <lvenhoda@redhat.com>
+
+	dcc: Don't disconnect channel, when compression is not supported
+	Don't disconnect the display channel, when unsupported compression is
+	requested from the client. Not changing the compression is enough.
+
+	https://bugs.freedesktop.org/show_bug.cgi?id=92821
+	Acked-by: Victor Toso <victortoso@redhat.com>
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2015-12-16  Christophe Fergeau  <cfergeau@redhat.com>
+
+	build: Remove unused SPICEC_STATIC_LINKAGE_BSTATIC
+	A left-over from the client code.
+
+2015-12-16  Marc-Andre Lureau  <marcandre.lureau@gmail.com>
+
+	stream: consitify reds_stream_get_family() argument
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2015-12-15  Francois Gouget  <fgouget@codeweavers.com>
+
+	server: Use '%zu' to print size_t variables
+	The size_t definition is different between 32 and 64 bit systems so that
+	neither '%u' nor '%lu' work for both. '%zu' should be used instead.
+
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	server: Remove an unneeded mjpeg-encoder.h include
+	The corresponding code has been moved elsewhere during the refactoring.
+
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	server: Use PRI macros in printf for 32/64 bit compatibility
+	Some integer type definitions are different between 32 and 64 bit
+	systems which causes problems in printf. The PRI macros automatically
+	provide the printf format appropriate for the system.
+
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+2015-12-15  Frediano Ziglio  <fziglio@redhat.com>
+
+	tests: reuse Makefile macro
+	For coherency use COMMON_BASE macro instead of including single
+	files.
+
+	Acked-by: Victor Toso <victortoso@redhat.com>
+
+	tests: allocate memory in a coherent fashion
+	Do not free memory allocated with C functions (like calloc) using g_free;
+	although this is possible with default Glib allocator this is not safe.
+	Also use consistent allocation functions. All other spice-server code
+	does not use Glib allocations so for coherence do not use them for
+	watches.
+
+	Acked-by: Victor Toso <victortoso@redhat.com>
+
+2015-12-14  Marc-André Lureau  <mlureau@redhat.com>
+
+	red-channel: constify some callback structs
+	Because we can.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2015-12-14  Christophe Fergeau  <cfergeau@redhat.com>
+
+	build: Don't list some installed headers twice
+	Since commit febaed3, spice.h and spice-experimental.h are listed both
+	in libspice_server_la_HEADERS and libspice_server_la_SOURCES. Since we
+	want these headers to be installed, we can remove them from _SOURCES.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2015-12-14  Francois Gouget  <fgouget@codeweavers.com>
+
+	server: Add time constants to go with spice_get_monotonic_time_ms()
+	They clarify the time unit being used and simplify calculations.
+
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+	server: Add time constants to go with spice_get_monotonic_time_ns()
+	They clarify the time unit being used, reduce the need for casts and
+	simplify calculations.
+
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+	server: Rename DISPLAY_CLIENT_TIMEOUT and de-duplicate it
+	Given that it is used for both cursor and display, COMMON_CLIENT_TIMEOUT
+	seems more appropriate. Also define it only in red-worker.h.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2015-12-11  Pavel Grunt  <pgrunt@redhat.com>
+
+	worker: Rename function name in the comment as well
+	It was renamed in 47b023866faac2c5e3302d4d3fc42a0260a5557c
+
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+2015-12-11  Frediano Ziglio  <fziglio@redhat.com>
+
+	dcc: do not cause problem with multiple threads.
+	With multiple cards configured you can have multiple workers running in
+	different thread.
+	With such configuration static variables not syncronized could lead
+	to undefined behavior.
+
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	reds: do not use g_malloc0 in server code
+	The rest of code is using spice_malloc* functions, use them for
+	consistency.
+
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+2015-12-11  Francois Gouget  <fgouget@codeweavers.com>
+
+	server: Use spice_get_monotonic_time_ms() in spice_timer_queue.c
+	This reduces code duplication.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	server: Add spice_get_monotonic_time_ms()
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	server: Rename red_get_monotonic_time() to spice_get_monotonic_time_ns()
+	This is a generic function not tied to the red_xxx functionality and the
+	new name clarifies that it returns the time in nanoseconds (unlike
+	g_get_monotonic_time()).
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	server: Provide a framerate estimate based on the initial frames
+	This way the video encoder can actually count on a real estimate when
+	it is initializing.
+	Note that the server only creates a video stream if at least 20 bitmap
+	'blits' of the same size and type arrive, each within a maximum time
+	interval from the previous one. So it was only keeping track of the
+	frame to frame interval. Thus to get an average frame rate over all the
+	20 frames it's necessary to also keep track of the first_frame_time.
+
+2015-12-11  Marc-André Lureau  <mlureau@redhat.com>
+
+	snd: remove duplicated snd_attach_*() code
+	red_channel_set_data() already sets channel->data.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	build-sys: disable static lib by default
+	It's not used in general, so no need to build it by default.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2015-12-10  Marc-Andre Lureau  <marcandre.lureau@gmail.com>
+
+	red-dispatcher: group cases
+	A small cleanup.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2015-12-10  Marc-André Lureau  <mlureau@redhat.com>
+
+	snd: simplify reds_register_channel() call
+	Give channel argument directly
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2015-12-10  Frediano Ziglio  <fziglio@redhat.com>
+
+	channel: make sure we retain RedChannelClient while processing it
+	During display_channel_handle_migrate_data the pointer is passed
+	to different functions which could release it making the pointer
+	invalid. Make sure pointer is not freed while processing.
+
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	channel: rename red_channel_(client_)waits_* functions
+	Make clear that these funcion are just checking a condition.
+
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+2015-12-10  Francois Gouget  <fgouget@codeweavers.com>
+
+	server: Remove an unneeded time.h include directive
+	main-channel.c now uses g_get_monotonic_time() instead of
+	clock_gettime().
+
+2015-12-09  Frediano Ziglio  <fziglio@redhat.com>
+
+	server: misc header cleanups
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	server: merge spice-bitmap-utils and spice_bitmap_utils
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	stat: add test for statistic functions
+	Make sure code compile with and without statistics enabled (beside
+	printing functions).
+
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	stat: use a better design for statistic functions
+	make sure code compile with statistics enabled or disabled.
+	Dummy (empty) structures and functions are used instead of preprocessor.
+	Also fix a problem as stat_compress_init did not initialize clock
+	field.
+
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	stat: fix portability problem in stat_time_t declaration
+	Assure stat_time_t is 64 bit on all architectures.
+	long is not 64 bit on 32 bit systems so use uint64_t intead.
+	Also avoid 32 bit overflows for such architectures.
+
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+2015-12-09  Marc-André Lureau  <marcandre.lureau@gmail.com>
+
+	display: replace some dubious asserts
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+	Acked-by: Uri Lublin <uril@redhat.com>
+
+2015-12-08  Francois Gouget  <fgouget@codeweavers.com>
+
+	server: Use g_get_monotonic_time() to get the time in microseconds
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	server: Define the MJPEG encoder warmup time in nanoseconds
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	server: Simplify the MJPEG encoder's maximum framerate estimation
+	Note that if frame_size == bytes_per_sec == 0 this now returns
+	MJPEG_MAX_FPS but this should not happen anyway.
+
+	server: Rename SUPPORT_AUTOMATED_TESTS to HAVE_AUTOMATED_TESTS
+	This improves consistency with spice-deps.m4 which names its
+	AM_CONDITIONAL() variables HAVE_XXX.
+
+2015-12-04  Alon Levy  <alon@pobox.com>
+
+	server: multiple clients works ok if we limit the pipe to the slowest client
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+2015-12-04  Frediano Ziglio  <fziglio@redhat.com>
+
+	pass proper type to SPICE_CONTAINEROF
+	In some case the member specified to SPICE_CONTAINEROF was not
+	exactly the same type of the pointer passed.
+	This can cause issues if structure changes so use proper member.
+
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	worker: improve validation for update command
+	If surface_id is not valid we should still release resource allocated
+	by red_get_update_cmd and from the guest.
+	This to reduce leaks in case of a race or another error in the guest
+	driver.
+	Also not issue a warning on invalid surface number to avoid filling
+	log space unconditionally.
+
+	Acked-by: Pavel Grunt <pgrunt@redhat.com>
+
+2015-12-04  Jonathon Jongsma  <jjongsma@redhat.com>
+
+	remove glz_encoder_config.h
+	Move all code from glz_encoder_config.h into other files.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2015-12-04  Alon Levy  <alon@pobox.com>
+
+	tests: test_display_base: use a faster wakeup time to easily test multiple client blocking
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+2015-12-04  Frediano Ziglio  <fziglio@redhat.com>
+
+	server: rename files
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	memslot: change some spice_assert to spice_return_if_fail
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	display: misc style and rename changes
+	- remove some red_ prefix;
+	- move red_drawable->self_bitmap check outside handle_self_bitmap;
+	- move update check outside red_get_area (renamed surface_read_bits);
+	- rename depend_on_surface_id argument to surface_id;
+	- rename success variable to add_to_pipe.
+
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	worker: move red_process_draw to display-channel.c
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	display: make get_drawable symmetric to display_channel_drawable_unref
+	Make possible to safely call display_channel_drawable_unref straight
+	after calling get_drawable.
+
+	Problem was function definitions and dependency.
+
+	display_channel_drawable_try_new is supposed to return an uninitialized
+	pointer (or NULL on failure) to a Drawable structure.
+
+	(display_channel_)get_drawable is supposed to return an initialized
+	pointer (or NULL) to a Drawable structure.
+
+	(display_channel_)add_drawable is supposed to add the Drawable to the
+	list/tree of drawing to draw.
+
+	Now, with these definitions after get_drawable the Drawable state (if
+	pointer is not NULL) should be consistent and we should be able to call
+	display_channel_drawable_unref.
+
+	In the current code this was not true as for instance surface_id was
+	copied to Drawable but the reference counter of the surface was not
+	incremented leading possible unref call to decrement the counter and
+	free the surface. This can happen if any call between get_drawable and
+	unref does not increment the reference in a consistent way. This
+	basically means that every present or future code in the path between
+	get_drawable and unref have to know this unconsistency and handle it.
+	This is a maintaining problem as people need to know these details when
+	editing existing code (actually this is display_channel_add_drawable
+	code).
+	This basically create a dependency between get_drawable and
+	add_drawable.
+
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+2015-12-03  Francois Gouget  <fgouget@codeweavers.com>
+
+	server: Reuse red_get_monotonic_time() in the MJPEG video encoder
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2015-12-03  Frediano Ziglio  <fziglio@redhat.com>
+
+	stat: fix stat_info_t initialization
+	For compression statistics clock field was not initialized but used
+	computing statistics.
+
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+2015-12-03  Marc-André Lureau  <marcandre.lureau@gmail.com>
+
+	worker: rename process_commands process_display
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+2015-12-03  Frediano Ziglio  <fziglio@redhat.com>
+
+	dcc: reduce statement wrapping
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	worker: change red_worker_new_channel result to CommonChannel*
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	memslot: prefix memslot functions with memslot_
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	worker: do not use dynamic memory for RedSurfaceCmd
+	Allocation on stack is sufficient and code is more similar to
+	QXL_CMD_MESSAGE and QXL_CMD_UPDATE cases.
+
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	display: move more logic in display_channel_get_drawable()
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	worker: move get_drawable to display-channel.c
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+2015-12-02  Marc-André Lureau  <marcandre.lureau@gmail.com>
+
+	smartcard: include libcacard.h if possible
+
+2015-12-02  Yonit Halperin  <yhalperi@redhat.com>
+
+	red_worker: make dcc_clear_surface_drawables_from_pipe declaration consistent with definition
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2015-12-02  Marc-André Lureau  <marcandre.lureau@gmail.com>
+
+	worker: merge handle_new_display_channel
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	display: rename detach_streams_behind
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	display: add update_compression() method
+	Acked-by: Pavel Grunt <pgrunt@redhat.com>
+
+	worker: move red_process_surface
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+2015-11-27  Marc-André Lureau  <marcandre.lureau@gmail.com>
+
+	Add travis CI file
+
+	Update spice-common
+	Fix distcheck
+
+	build-sys: remove --enable-opengl
+	OpenGL was removed in commit c5c176a5c7, enabling it on discheck will
+	fail to link with spice-common gl-enabled library
+
+	server: cleanups
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	worker: remove some unnecessary inline
+	Acked-by: Pavel Grunt <pgrunt@redhat.com>
+
+	worker: move dcc_send & marshallers to dcc-send.c
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2015-11-26  Marc-André Lureau  <marcandre.lureau@gmail.com>
+
+	worker: move red_pipes_remove_drawable
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	worker: move current_remove*
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	worker: move more stream functions
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	display: remove some public declarations
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	server: move LZ_IMAGE_TYPE_* enum to dcc
+	Acked-by: Pavel Grunt <pgrunt@redhat.com>
+
+	display: Simplify display_channel_create_surface
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	server: rename _tmpl files
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	display: reuse code in display_channel_draw_until
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	worker: use spice_return_if_fail() instead of spice_assert() in release_item
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	worker: changed some spice_assert in display_channel_draw_till
+	Reviewed-by: Jonathon Jongsma <jjongsma@redhat.com>
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2015-11-25  Marc-André Lureau  <marcandre.lureau@gmail.com>
+
+	display: Remove extra parameters from create_canvas_for_surface
+	Get them from the surface
+
+	Acked-by: Pavel Grunt <pgrunt@redhat.com>
+
+	worker: move display_channel_create_surface
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	worker: move display_channel_update
+	Acked-by: Pavel Grunt <pgrunt@redhat.com>
+
+	worker: move destroy_surface() familly
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	worker: move display_channel_new
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	display: factor out current_find_intersects_rect
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	display: factor out draw_until
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	worker: move display_channel_draw
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	worker: simplify surface_update_dest()
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2015-11-25  Francois Gouget  <fgouget@codeweavers.com>
+
+	server: Remove MJPEG's video callback assert
+	A NULL get_roundtrip_ms() callback simply disables rate control so
+	that mjpeg_encoder_get_source_fps() will not be called.
+	Should it be called despite this, simply return the highest allowed
+	framerate (get_source_fps()'s value is only an estimate anyway).
+	Finally update_client_playback_delay() is always checked before use.
+
+	server: Encapsulate the get_source_fps() video encoder callback
+
+2015-11-24  Frediano Ziglio  <fziglio@redhat.com>
+
+	worker: simplify handle_dev_oom
+	Do not check if worker->display_channel is NULL as we are already using
+	to get some field so must be not NULL.
+	Reuse display_red_channel variable.
+
+	Acked-by: Uri Lublin <uril@redhat.com>
+
+	dcc: remove possible dandling pointers
+	Set pointers to NULL after releasing encoders.
+	This to make sure no further access will occurs.
+
+	Acked-by: Victor Toso <victortoso@redhat.com>
+	Acked-by: Pavel Grunt <pgrunt@redhat.com>
+
+2015-11-24  Marc-André Lureau  <marcandre.lureau@gmail.com>
+
+	worker: Change validate_area to surface_update_dest
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	worker: rename red_connect_cursor and tidy up a bit
+	Acked-by: Pavel Grunt <pgrunt@redhat.com>
+
+2015-11-24  Frediano Ziglio  <fziglio@redhat.com>
+
+	worker: fix constant
+	Use mnemonic instead of constant to return enumeration value
+
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+2015-11-24  Marc-André Lureau  <marcandre.lureau@gmail.com>
+
+	worker: move drawable_draw
+	Acked-by: Fabiano Fidêncio <fabiano@fidencio.org>
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	worker: remove display_channel prefix from channel callbacks
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	worker: move dcc_release_item
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	worker: simplify handle_migrate_data functions
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	worker: move dcc_handle_migrate_data
+	Acked-by: Fabiano Fidêncio <fabiano@fidencio.org>
+
+	worker: move attach_stream
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	worker: move dcc_add_drawable*
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	worker: move dcc_handle_message
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	worker: do not set worker image compression on client request
+	Display client can ask to change the preferred compression.
+	Previously this setting change the entire worker setting
+	so every future client created would have this setting.
+	Remove the setting in the worker make the change only to the
+	current client.
+
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+2015-11-23  Marc-André Lureau  <marcandre.lureau@gmail.com>
+
+	worker: rename update_area
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+	Acked-by: Fabiano Fidêncio <fabiano@fidencio.org>
+
+	worker: move display_channel_free_some
+	Author:    Marc-André Lureau <marcandre.lureau@gmail.com>
+	Acked-by: Fabiano Fidêncio <fabiano@fidencio.org>
+
+	worker: replace some precondition checks
+	Acked-by: Fabiano Fidêncio <fabiano@fidencio.org>
+
+	worker: generalize surface_dirty_region_to_rects
+	Acked-by: Fabiano Fidêncio <fabiano@fidencio.org>
+
+	worker: move dcc_add_surface_area_image
+	Author:    Marc-André Lureau <marcandre.lureau@gmail.com>
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+2015-11-23  Pavel Grunt  <pgrunt@redhat.com>
+
+	main channel: Remove unused main_channel_client_get_link_id
+	It was introduced in 9cece23ba3e49e6eec9e380daa95d6ee0133c91c
+	but never used.
+
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	main channel: Remove unused main_channel_push_notify
+	It is not needed since 8d44aa032892ea6643925fa7485d9af32853e127
+
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	red channel: Remove unused red_channel_apply_clients_data
+	It was introduced in 7e8e13593ee681cf04c349bca57dd225d7802494
+	but never used.
+
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	red channel: Remove unused declaration of red_channel_pipes_remove
+	It was introduced in 09ae4700d27b7c1cca64c2ce4c90f0c6cdf81ccf
+	but never used.
+
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	red channel: Remove unused red_channel_push_set_ack
+	It is not needed since 8e7b22b7861d2859167767822f29749bfe3ecc16
+
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	red dispatcher: Remove unused declaration of red_dispatcher_set_mm_time
+	It is not used since c541d7e29dc0053e6434d053a50454bb8a7121e9
+
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	dispatcher: Remove unused dispatcher_read_message
+	It is not needed since d3153f861065235c2a7a7120375be5db948c5a77
+
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+2015-11-23  Frediano Ziglio  <fziglio@redhat.com>
+
+	worker: move red_drawable_count to DisplayChannel
+	Acked-by: Pavel Grunt <pgrunt@redhat.com>
+
+	reuse red_get_monotonic_time function
+	Acked-by: Pavel Grunt <pgrunt@redhat.com>
+
+2015-11-21  Marc-André Lureau  <marcandre.lureau@gmail.com>
+
+	server: remove OpenGL
+	This is really not supported, requires X11, so better to remove it for
+	now. Some day it might be revived, using DRM, ..
+
+	Note for later, this could be removed too (not used by client):
+	- spice-common/common/ogl_ctx
+
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	stream: remove red_stream_ prefix from mjpeg callbacks
+	Author:    Marc-André Lureau <marcandre.lureau@gmail.com>
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	stream: rename {red_stream_, }get_initial_bit_rate
+	Author:    Marc-André Lureau <marcandre.lureau@gmail.com>
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	stream: remove dcc parameter from stream_agent_stop()
+	Author:    Marc-André Lureau <marcandre.lureau@gmail.com>
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2015-11-20  Marc-André Lureau  <marcandre.lureau@gmail.com>
+
+	worker: move more free_glz_drawable
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2015-11-20  Pavel Grunt  <pgrunt@redhat.com>
+
+	worker: Free encoders when client disconnects
+
+	dcc: Fix unused display_channel variable
+	Avoid problem when compiling with lz4 and without COMPRESS_STAT
+
+	dcc.c: In function 'dcc_compress_image_lz4':
+	dcc.c:657:21: error: unused variable 'display_channel' [-Werror=unused-variable]
+	     DisplayChannel *display_channel = DCC_TO_DC(dcc);
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2015-11-20  Marc-André Lureau  <marcandre.lureau@gmail.com>
+
+	worker: move stream_clip_item_unref()
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	worker: merge red_draw_qxl_drawable in drawable_draw
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	worker: move dcc_pixmap_cache_add
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	worker: move dcc_freeze_glz
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	worker: few function renames
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	worker: add display_channel_free_glz_drawables_to_free()
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	worker: move dcc_free_glz_drawable_instance
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	worker: move display_channel_flush_all_surfaces
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+2015-11-20  Frediano Ziglio  <fziglio@redhat.com>
+
+	worker: move compress to dcc_compress_image()
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	worker: move glz_drawable_count to DisplayChannel
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+2015-11-19  Christophe Fergeau  <cfergeau@redhat.com>
+
+	manual: Document path to vdagent logs on Windows
+
+	manual: Small formatting fixes
+	The XML namespace to use with libvirt when adding custom QEMU arguments
+	looks better in a monospace font.
+	asciidoc will also replace the '->' in '<->' with an arrow character,
+	which looks bad. This commit reformulates the sentence to avoid the use
+	of <->
+
+2015-11-19  Marc-André Lureau  <marcandre.lureau@gmail.com>
+
+	worker: move display_channel_wait_for_migrate_data
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	worker: move dcc_start()
+	Author:    Marc-André Lureau <marcandre.lureau@gmail.com>
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	worker: start a DisplayChannelClient unit
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+2015-11-19  Pavel Grunt  <pgrunt@redhat.com>
+
+	Fix spice-common submodule
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2015-11-19  Marc-André Lureau  <marcandre.lureau@gmail.com>
+
+	worker: simplify GlzDrawableInstanceItem fields name
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	worker: move encoders to dcc-encoders
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+2015-11-18  Marc-André Lureau  <marcandre.lureau@gmail.com>
+
+	worker: painfully move display_channel_add_drawable
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	worker: add compression parameters to dcc
+	This allow different dcc to have different settings from default one.
+	The parameters are copied initially from default settings but then they
+	can change independently for each client.
+	Even having a single client a future client is not affected by a
+	previous setting on the old dcc.
+
+	[updated for the preferred compression]
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2015-11-18  Jonathon Jongsma  <jjongsma@redhat.com>
+
+	Rename red_display_free_* to dcc_free_*
+	Acked-by: Pavel Grunt <pgrunt@redhat.com>
+
+2015-11-18  Marc-André Lureau  <marcandre.lureau@gmail.com>
+
+	worker: simplify RedCompressBuf
+	Make sure an allocated buffer is correctly referenced by the marshaller,
+	and can't be free and reused by mistake. Simplify the code by using
+	GSlice
+
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	worker: move surfaces to DisplayChannel
+	Ok. this one was painful.Note that in some cases, DCC_TO_DC should be
+	made safer (there used to be a if !dcc guard in some places, although
+	that looks wrong anyway)...
+
+	Acked-by: Pavel Grunt <pgrunt@redhat.com>
+
+2015-11-18  Jonathon Jongsma  <jjongsma@redhat.com>
+
+	Move stream creation and maintenance functions to stream.[ch]
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+2015-11-18  Marc-André Lureau  <marcandre.lureau@gmail.com>
+
+	worker: move stream_agent_stop and friends
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+2015-11-18  Pavel Grunt  <pgrunt@redhat.com>
+
+	worker: Remove unused red_show_tree
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2015-11-18  Marc-André Lureau  <marcandre.lureau@gmail.com>
+
+	display-channel: Keep macro definition in one line
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2015-11-18  Frediano Ziglio  <fziglio@redhat.com>
+
+	worker: simplify red_marshall_image
+	Remove some nested blocks using else if.
+
+	Acked-by: Pavel Grunt <pgrunt@redhat.com>
+
+2015-11-18  Jonathon Jongsma  <jjongsma@redhat.com>
+
+	worker: Move stream functions to stream.c
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+2015-11-17  Jonathon Jongsma  <jjongsma@redhat.com>
+
+	Move some tree item functions to tree.[ch]
+	Also rename some functions slightly:
+	     __find_shadow -> tree_item_find_shadow()
+	     __contained_by -> tree_item_contained_by()
+	     ring_of -> tree_item_container_items();
+
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+2015-11-16  Francois Gouget  <fgouget@codeweavers.com>
+
+	build-sys: Use SPICE_WARNING() to issue the architecture warning
+	Note that spice-deps.m4 now provides the AS_VAR_APPEND() fallback.
+
+2015-11-16  Jonathon Jongsma  <jjongsma@redhat.com>
+
+	Move some more drawable functions to display channel
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	worker: Rename current_clear() to current_remove_all()
+	Acked-by: Pavel Grunt <pgrunt@redhat.com>
+
+	Move dcc_push_stream_agent_clip() to display channel
+	rename to dcc_add_stream_agent_clip()
+
+	Acked-by: Pavel Grunt <pgrunt@redhat.com>
+
+2015-11-16  Francois Gouget  <fgouget@codeweavers.com>
+
+	server: Duplicate typedef definitions are not allowed in C99
+	This fixes some compilation errors with gcc 4.4.7 on RHEL 6.
+
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	server: Include stdint.h for int64_t
+	This fixes a compilation error with gcc 4.4 on RHEL 6.
+
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+2015-11-13  Francois Gouget  <fgouget@codeweavers.com>
+
+	server: Remove the display_channel_attach_stream() prototype
+	It is unused.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	build-sys: Use AC_MSG_NOTICE()
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2015-11-13  Marc-André Lureau  <marcandre.lureau@gmail.com>
+
+	worker: don't use weird RedCompressedBuf nbytes shifting
+	Acked-by: Pavel Grunt <pgrunt@redhat.com>
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+2015-11-13  Victor Toso  <victortoso@redhat.com>
+
+	spicevmc: set state of DeviceInstance to NULL
+	After spice_char_device_state_destroy is called spicevmc should not keep
+	reference to that memory. state->chardev_st and sin->st point to the
+	same SpiceCharDeviceState and both should be set to NULL when it is
+	destroyed.
+
+	char-device: set to NULL freed pointers on destroy
+	As SpiceCharDeviceState is only unref'ed on
+	spice_char_device_state_destroy the same device could be destroyed more
+	then once so the pointers that are freed should be set to NULL.
+
+	Related: https://bugzilla.redhat.com/show_bug.cgi?id=1281455
+
+2015-11-13  Pavel Grunt  <pgrunt@redhat.com>
+
+	reds: Do not abort due to wrong header
+	Just prevent the buggy client from connecting.
+
+	 #0  0x00007fffe83b2a98 in raise () at /lib64/libc.so.6
+	 #1  0x00007fffe83b469a in abort () at /lib64/libc.so.6
+	 #2  0x00007ffff7b1533d in spice_logv (log_domain=0x7ffff7b87226 "Spice", log_level=SPICE_LOG_LEVEL_ERROR, strloc=0x7ffff7b92aba "reds.c:1373", function=0x7ffff7b94f40 <__FUNCTION__.31775> "reds_send_link_ack", format=0x7ffff7b871fe "assertion `%s' failed", args=args@entry=0x7fffffffcb68) at log.c:109
+	 #3  0x00007ffff7b15468 in spice_log (log_domain=log_domain@entry=0x7ffff7b87226 "Spice", log_level=log_level@entry=SPICE_LOG_LEVEL_ERROR, strloc=strloc@entry=0x7ffff7b92aba "reds.c:1373", function=function@entry=0x7ffff7b94f40 <__FUNCTION__.31775> "reds_send_link_ack", format=format@entry=0x7ffff7b871fe "assertion `%s' failed") at log.c:123
+	 #4  0x00007ffff7aee335 in reds_handle_read_link_done (link=0x555556b27c70)
+	     at reds.c:1373
+	 #5  0x00007ffff7aee335 in reds_handle_read_link_done (opaque=0x555556b27c70)
+	     at reds.c:2139
+	 #6  0x000055555588acc6 in qemu_iohandler_poll ()
+	 #7  0x000055555588a8e1 in main_loop_wait ()
+	 #8  0x0000555555614064 in main ()
+
+	Resolves: https://bugzilla.redhat.com/show_bug.cgi?id=1281442
+
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2015-11-13  Victor Toso  <victortoso@redhat.com>
+
+	char-device: free all memory pool when no clients
+	When no client is connect we should not need to keep the memory pool
+	used by char-device. In most situations this is not significant but
+	when using webdav this could mean freeing MAX_POOL_SIZE bytes
+
+	Related: https://bugs.freedesktop.org/show_bug.cgi?id=91350
+
+	char-device: Define a memory pool limit
+	Otherwise the amount of unused memory could grow while transfering big
+	chunks of data. This change only means that once the memory was used it
+	will not be stored again after the limit was reached.
+
+	Related: https://bugs.freedesktop.org/show_bug.cgi?id=91350
+
+	char-device: fix usage of free/unref on WriteBuffer
+	There are places were the could should definetly free the
+	SpiceCharDeviceWriteBuffer and places that it should only unref it. The
+	current use of spice_char_device_write_buffer_free was missleading.
+
+	This patch creates the spice_char_device_write_buffer_unref and properly
+	call these two functions.
+
+	Related: https://bugs.freedesktop.org/show_bug.cgi?id=91350
+
+2015-11-12  Frediano Ziglio  <fziglio@redhat.com>
+
+	worker: fix compiling with COMPRESS_STAT enabled
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+2015-11-12  Pavel Grunt  <pgrunt@redhat.com>
+
+	worker: Remove usage of streaming_video global in DisplayChannel
+	Avoid creating streams for every image due to not properly initialized
+	DisplayChannel->stream_video field.
+
+	Regression since: 4987df8e67f48cde13d39f4e81909f672ae33e29
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2015-11-12  Marc-André Lureau  <marcandre.lureau@gmail.com>
+
+	worker: move some tree container functions
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	worker: rename a bit current_add functions
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2015-11-11  Jonathon Jongsma  <jjongsma@redhat.com>
+
+	worker: Remove duplicate DISPLAY_CLIENT_TIMEOUT define
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+2015-11-11  Marc-André Lureau  <marcandre.lureau@gmail.com>
+
+	worker: move RED_WORKER_STAT, make it compile again
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+2015-11-11  Jonathon Jongsma  <jjongsma@redhat.com>
+
+	worker: Move drawable utility functions to display channel
+	Functions that check the equality of a path, brush, etc are moved the
+	display channel source file to prepare for moving the surfaces to the
+	display channel.
+
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	worker: Move is_opaque_item() to tree.h
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+2015-11-11  Marc-André Lureau  <marcandre.lureau@gmail.com>
+
+	worker: move drawable to display
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+2015-11-10  Marc-André Lureau  <marcandre.lureau@gmail.com>
+
+	worker: move current to display
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	worker: move red_destroy_surface_item()
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	worker: move stream to display channel
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	worker: move DisplayChannel/DisplayChannelClient functions together
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	worker: rename functions that handle DisplayChannelClient
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	worker: move stream functions to a new stream.c file
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	worker: move stream definitions to a new stream.h file
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	worker: fix RED_STREAM_TIMOUT macro spelling
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+2015-11-10  Frediano Ziglio  <fziglio@redhat.com>
+
+	remove server/stream.h file added by mistake in previous commit
+	Acked-by: Pavel Grunt <pgrunt@redhat.com>
+
+2015-11-10  Marc-André Lureau  <marcandre.lureau@gmail.com>
+
+	worker: move image cache to display
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	worker s/surfaces_dest/surface_deps
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+2015-11-09  Pavel Grunt  <pgrunt@redhat.com>
+
+	syntax-check: Add missing #include <config.h>
+
+	red_dispatcher: Remove unused signal.h include
+
+2015-11-09  Marc-André Lureau  <marcandre.lureau@gmail.com>
+
+	worker: group add_memslot
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	worker: remove unused NUM_CURSORS define
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	worker: make more functions static
+	Acked-by: Pavel Grunt <pgrunt@redhat.com>
+
+	worker: remove unused function
+	Acked-by: Pavel Grunt <pgrunt@redhat.com>
+
+	worker: rename {put,ref}_red_drawable
+	Acked-by: Pavel Grunt <pgrunt@redhat.com>
+
+	worker: s/destroy_surface/surface_unref
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2015-11-09  Frediano Ziglio  <fziglio@redhat.com>
+
+	worker: remove unused parameter from remove_shadow
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+2015-11-09  Marc-André Lureau  <marcandre.lureau@gmail.com>
+
+	worker: remove some useless counters
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	dispatcher: remove receive_data and send_data functions
+	Use read_safe/write_safe instead which do the same stuff
+
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	server: create display and cursor channels in RedWorker constructor
+	Instead of requiring the dispatcher to send a message to the worker to
+	create the display channel and cursor channel, just create them when
+	the worker is created.
+
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+2015-11-06  Marc-André Lureau  <marcandre.lureau@gmail.com>
+
+	worker: use RED_CHANNEL_CLIENT for dcc
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+2015-11-06  Pavel Grunt  <pgrunt@redhat.com>
+
+	spicevmc: Return early when instance has no device state
+	Same approach as in spice_server_char_device_wakeup().
+	Avoid segmentation fault when the webdav channel (spice port channel) is
+	used with the vnc display:
+	 #0  0x00007ffff7aab734 in spice_char_device_state_opaque_get (dev=0x0)
+	     at char_device.c:720
+	 #1  0x00007ffff7b0850c in spice_server_port_event (sin=<optimized out>, event=<optimized out>) at spicevmc.c:578
+	 #2  0x0000555555787ba4 in set_guest_connected (port=<optimized out>, guest_connected=1) at hw/char/virtio-console.c:89
+	 #3  0x0000555555678d7c in control_out (len=<optimized out>, buf=0x55555775c3a0, vser=0x5555578d1540) at /home/pgrunt/RH/qemu/hw/char/virtio-serial-bus.c:404
+	 #4  0x0000555555678d7c in control_out (vdev=0x5555578d1540, vq=0x555557941bc8)
+	     at /home/pgrunt/RH/qemu/hw/char/virtio-serial-bus.c:441
+	 #5  0x000055555588eb98 in aio_dispatch (ctx=0x5555562e1a50) at aio-posix.c:160
+	 #6  0x00005555558829ee in aio_ctx_dispatch (source=<optimized out>, callback=<optimized out>, user_data=<optimized out>) at async.c:226
+	 #7  0x00007ffff2010e3a in g_main_context_dispatch () at /lib64/libglib-2.0.so.0
+	 #8  0x000055555588d8fb in main_loop_wait () at main-loop.c:211
+	 #9  0x000055555588d8fb in main_loop_wait (timeout=<optimized out>)
+	     at main-loop.c:256
+	 #10 0x000055555588d8fb in main_loop_wait (nonblocking=<optimized out>)
+	     at main-loop.c:504
+	 #11 0x000055555561b664 in main () at vl.c:1891
+
+2015-11-06  Marc-André Lureau  <marcandre.lureau@gmail.com>
+
+	worker: move shadow_new() and container_new()
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	worker: use more DCC_TO_WORKER
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	worker: move some compress stats to display
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	worker: rename WORKER_FOREACH_DCC_SAFE macro to FOREACH_DCC
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	worker: remove unused WORKER_TO_DCC macro
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	worker: rename red_pipe_add_drawable* to dcc_add_drawable*
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	worker: move delta computation
+	Move delta computation from red_add_drawable to red_current_add_with_shadow.
+
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+2015-11-05  Marc-André Lureau  <marcandre.lureau@gmail.com>
+
+	worker: move MonitorsConfig to display channel
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	worker: minor simplification
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+2015-11-05  Frediano Ziglio  <fziglio@redhat.com>
+
+	worker: don't process drawable if it can't be allocated
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+2015-11-05  Marc-André Lureau  <marcandre.lureau@gmail.com>
+
+	worker: move DisplayChannel struct
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2015-11-04  Jonathon Jongsma  <jjongsma@redhat.com>
+
+	style: prefer early return to large if blocks
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	Remove unnecessary typedef from pixmap-cache.h
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2015-11-04  Marc-André Lureau  <marcandre.lureau@gmail.com>
+
+	worker: Move some dpi code to display channel
+	This commit moves some DrawablePipeItem declarations to
+	display-channel.h, though the function implementations remain in
+	red_worker.c until they can be disentangled some more.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2015-11-04  Fabiano Fidêncio  <fidencio@redhat.com>
+
+	cursor: fix wrong logic when initializing the channel
+	It's a regression introduced by commit e601e920bd5. The logic error was
+	introduced when trying to achieve the following code[0]. but rewritten
+	to prefer an early return, which was wrogly negated.
+
+	[0]:
+	if (cursor_is_connected(worker)
+	    && !COMMON_CHANNEL(worker->cursor_channel)->during_target_migrate) {
+	        red_channel_pipes_add_type(RED_CHANNEL(worker->cursor_channel),
+	                                   PIPE_ITEM_TYPE_CURSOR_INIT);
+	}
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2015-11-04  Jonathon Jongsma  <jjongsma@redhat.com>
+
+	Palette cache: Use correct marshal function
+	In order to invalidate a single palette cache item, we were using
+	spice_marshall_msg_cursor_inval_one(), which is the marshal function
+	used to send an invalidation message for the Cursor channel's cache.
+	This didn't cause any problems because SPICE_MSG_CURSOR_INVAL_ONE and
+	SPICE_MSG_DISPLAY_INVAL_PALETTE have the same message ID and parameters,
+	but it's better to use the correct marshalling function.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2015-11-04  Marc-André Lureau  <marcandre.lureau@gmail.com>
+
+	Various changes in RedWorker and CursorChannel related to error and warning messages.
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	Move monitors_config to display
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	s/process_drawable/process_draw
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+2015-11-03  Marc-André Lureau  <marcandre.lureau@gmail.com>
+
+	server: move renderer members to DisplayChannel
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2015-11-03  Frediano Ziglio  <fziglio@redhat.com>
+
+	worker: remove only assigned set_client_capabilities_pending field
+	This field is only assigned and never readed so can be removed.
+
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+2015-11-03  Marc-André Lureau  <marcandre.lureau@gmail.com>
+
+	server: move bitmap related to spice-bitmap-utils
+	Also remove some unused function parameters from
+	bitmap_get_graduality_level()
+
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	worker: remove unused worker parameter
+	Acked-by: Pavel Grunt <pgrunt@redhat.com>
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	Store QXLInstance in CursorItem
+	Doing so allows us to remove the extra QXLInstance parameter from
+	cursor_item_unref() and makes the code a bit cleaner.
+
+	Also add cursor_item_ref().
+
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	server: make more of cursor private
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	server: make cursor channel private
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+2015-11-02  Marc-André Lureau  <marcandre.lureau@gmail.com>
+
+	Move pipe item enumerations out of red_worker.h
+	Move the cursor-specific pipe item types to cursor-channel.h, and the
+	display-specific types to red_worker.c. Only leave the common
+	definitions in red_worker.h. This prepares for splitting the display
+	channel into a separate file.
+
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+
+	server: move display_channel_client_create() to dcc_new()
+	Move function from server/red_worker.c to new server/display-channel.c.
+
+	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	tree: move that to a separate unit
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	worker: s/repoll/poll_tries
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2015-10-30  Marc-André Lureau  <marcandre.lureau@gmail.com>
+
+	Various minor style changes to worker and cursor channel
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	worker: remove assertion on alloc_drawable
+	There is no guarantee in the code that this can't be hit, so we should
+	cope with it (the condition can be reached easily by running the server
+	without waiting for blocked clients or pipe size)
+
+	The following commit will attempt to address this.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+	__new_channel -> red_worker_new_channel()
+	Rename and lightly refactor the function that creates new common
+	channels for RedWorker (essentially Cursor and Display channels).
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	Make cursor_channel_disconnect a CursorChannel method
+	The first argument should be CursorChannel* rather than RedChannel*
+	since it's essentially a CursorChannel method.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2015-10-30  Francois Gouget  <fgouget@codeweavers.com>
+
+	server: Hide the MJPEG encoder internals from red_worker.c
+
+	server: Move the MJPEG encoder functions to mjpeg_encoder.c
+	Note that this requires some adjustments to the encode_frame()
+	parameters to avoid red_worker-specific types.
+
+	server: Move mjpeg_encoder_new() to the end of mjpeg_encoder.c
+	This also allows getting rid of a couple of forward definitions.
+
+	server: Remove an unnecessary cast in encode_frame()
+
+2015-10-30  Marc-André Lureau  <marcandre.lureau@gmail.com>
+
+	Remove a couple single-use static functions
+	red_cursor_marshall_inval(), red_migrate_cursor() and
+	on_new_cursor_channel() were short functions that were each only called
+	from a single location, so there's no need for them to be separate
+	functions.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	CursorChannel* arg in cursor_channel_client_new()
+	Instead of passing a CommonChannel* argument, use CursorChannel* since
+	this function is only valid for CursorChannels.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	common_channel_client_create -> common_channel_new_client
+	Rename and re-order the initial arguments to make this function look and
+	act more like a method of the CommonChannel class.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	Change red_marshall_verb() to accept a VerbItem
+	Instead of passing a verb enumeration value, pass the verb pipe item
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	Remove unused parameter from cursor_channel_new()
+	cursor_channel_new() is only called from one location, and always passes
+	FALSE as the value for the 'migrate' paramater. In addition, this
+	parameter is not used within the function. Remove it.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2015-10-29  Frediano Ziglio  <fziglio@redhat.com>
+
+	server: remove undefined declaration
+
+2015-10-29  Marc-André Lureau  <marcandre.lureau@gmail.com>
+
+	Replace now() with get_mononotonic_time()
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	utils: add red_get_monotonic_time()
+
+2015-10-29  Frediano Ziglio  <fziglio@redhat.com>
+
+	worker: avoid to use constant directly for capabilities size
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+2015-10-29  Marc-André Lureau  <marcandre.lureau@gmail.com>
+
+	Move red_bitmap_utils.h->tmpl.c
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	worker: move some cursor code to cursor-channel.c
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	worker: rename some cursor functions
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	worker: change CursorItem memory allocation
+	Do not use static allocate space but handle dynamically
+
+2015-10-28  Marc-André Lureau  <marcandre.lureau@gmail.com>
+
+	worker: remove unused type field from AddBufInfo
+	value was always BUF_TYPE_RAW
+
+	Acked-by: Uri Lublin <ulublin@redhat.com>
+
+2015-10-28  Frediano Ziglio  <fziglio@redhat.com>
+
+	worker: fix timer queue creation
+	Timer queue is attached to current thread when created so it must be
+	created from the proper thread.
+	After worker initialization is moved in a following patch to main
+	thread the queue was created in the wrong thread causing program to
+	fail saying that the queue is NULL.
+
+	Acked-by: Uri Lublin <ulublin@redhat.com>
+
+2015-10-26  Marc-André Lureau  <marcandre.lureau@gmail.com>
+
+	server: group worker channel related stuff
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	worker: remove need for WorkerInitData
+	Move code around to declare and place it where it fits better.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	worker: access dispatcher pending field using helper functions
+
+2015-10-23  Marc-André Lureau  <marcandre.lureau@gmail.com>
+
+	server: split cache-item.h
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	server: start separate display/cursor channel headers
+	Just move some declarations around
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	server: remove worker->id
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2015-10-23  Christophe Fergeau  <cfergeau@redhat.com>
+
+	build-sys: Adjust to new spice-common spice-deps.m4
+	This commit also updates the spice-common submodule
+
+	Christophe Fergeau (7):
+	      Add marshaller test case
+	      build-sys: Use ${PKG_CONFIG} rather than pkg-config
+	      build-sys: Rework SPICE_CHECK_* m4 macros
+	      build-sys: Add gio-2.0 to SPICE_CHECK_GLIB2
+	      build-sys: Fix error in SPICE_CHECK_LZ4 description
+	      build-sys: Set automake conditional in SPICE_CHECK_SMARTCARD
+	      build-sys: Rename SUPPORT_GL to HAVE_GL
+
+	Javier Celaya (1):
+	      Fix linearization of several marshallers with one item
+
+	Lukas Venhoda (3):
+	      ssl-verify: Only check addr length when using IP addr
+	      m4: Require glib version >= 2.22
+	      ssl-verify: Changed IPv4 hostname to IPv6
+
+2015-10-23  Frediano Ziglio  <fziglio@redhat.com>
+
+	remove small leak in MJPEG code
+	cinfo.dest is allocated in spice_jpeg_mem_dest but never freed.
+	Note that jpeg_destroy_compress does not free this field as is
+	supposed to be a buffer provided by jpeg caller.
+
+	reduce locking time in async_command_alloc
+
+	removed unused recv_core field
+
+2015-10-23  Marc-André Lureau  <marcandre.lureau@gmail.com>
+
+	worker: remove useless MESSAGE_READY
+	Now that worker is created before running, and run() returns success,
+	there is no point in using MESSAGE_READY.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	dispatcher: style update
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2015-10-22  Marc-André Lureau  <marcandre.lureau@gmail.com>
+
+	server: remove worker thread creation from dispatcher
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	server/dispatcher: move worker enums to dispatcher header
+	Group enums with their respective struct location.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+	Acked-by: Fabiano Fidêncio <fabiano@fidencio.org>
+
+2015-10-21  Marc-André Lureau  <marcandre.lureau@gmail.com>
+
+	worker: use a single clockid
+	The stat functions in worker are not generic enough to deserve to be
+	"non-worker", so just pass the worker instance.
+
+2015-10-20  Marc-André Lureau  <marcandre.lureau@gmail.com>
+
+	server: rename red_client_cache.h to cache_item.tmpl.c
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2015-10-19  Christophe Fergeau  <cfergeau@redhat.com>
+
+	Add missing license headers
+
+	syntax-check: Exclude png files from sc_prohibit_empty_lines_at_EOF
+
+	syntax-check: Clean-up exception rules
+	Some files no longer exists, some exceptions are no longer needed, ...
+
+	syntax-check: Remove unused #include <strings.h>
+
+	syntax-check: Add missing #include <config.h>
+
+	syntax-check: Don't use tabs for indentation
+
+	syntax-check: Exclude red_replay_qxl.c from sc_cast_of_argument_to_free
+	red_replay_qxl.c stores some pointers QXLPHYSICAL data members (ie
+	uint64_t), and then needs to free them, so the cast is required.
+
+	syntax-check: Ignore .png files in sc_trailing_blank test
+
+	syntax-check: manual: Remove duplicate word
+
+	syntax-check: Add missing AUTHORS
+
+2015-10-19  Marc-André Lureau  <marcandre.lureau@gmail.com>
+
+	worker: use GOnce to surround some global init in dispatcher
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	server: move some pixmap cache code in own file
+	Remove that hideous template header that should really be regular code
+	since it's specialized and instanciated only for pixmap.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2015-10-19  snir sheriber  <ssheribe@redhat.com>
+
+	fix spelling mistakes in comments (reseting to resetting & dummym to dummy)
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2015-10-16  Jeremy White  <jwhite@codeweavers.com>
+
+	Update the .gitignore files for the new manual, for a few newly generated tests, and for the spice-server.h.
+
+2015-10-16  Marc-André Lureau  <marcandre.lureau@gmail.com>
+
+	Remove DRAW_ALL
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2015-10-15  Marc-André Lureau  <marcandre.lureau@gmail.com>
+
+	Remove PIPE_DEBUG
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	Remove ACYCLIC_SURFACE_DEBUG
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	Remove unfinished UPDATE_AREA_BY_TREE
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	server: small move to red_channel
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	worker: replace init with red_worker_new
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	red_worker: replace some abort()
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+2015-10-12  Frediano Ziglio  <fziglio@redhat.com>
+
+	Simplify pointer computation
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+2015-10-07  Christophe Fergeau  <cfergeau@redhat.com>
+
+	build-sys: Remove client check from configure.ac
+	configure.ac is checking for pyparsing availability if
+	client/generated_marshallers.cpp is missing. The client/ code is gone, and
+	the python modules checks are done in spice-common/configure.ac
+	nowadays, so we can get rid of this check.
+
 2015-10-06  Frediano Ziglio  <fziglio@redhat.com>
 
 	build-sys: bump libtool version information

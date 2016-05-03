@@ -1,3 +1,42 @@
+Major changes in 0.13.1:
+========================
+
+*** IMPORTANT ***
+The 0.13.x release series is an unstable release series, if you are looking for
+stability for daily use, please use the latest 0.12.x release. We are trying to
+keep the code as functional as 0.12, but regressions or bugs could still happen.
+
+* add spice_qxl_gl_scanout() spice_qxl_gl_draw_async() for local virgl support
+* spice_server_set_keepalive_timeout() has been removed in favour of
+  unconditionally sending keepalive probes every 10 minutes
+* the rework started in 0.13.0 has moved forward. The global RedsState *reds
+  variable has now been removed, GLib mainloop is now used for the RedWorker thread
+  rather than an adhoc implementation, some core classes have been ported to
+  GObject, ...
+* some crash/leak fixes in corner cases
+
+Major changes in 0.13.0:
+========================
+
+* Start of a large code rework to attempt to make the codebase more
+  maintainable. With this first release, the huge red_worker.c file has been split
+  in multiple smaller files.
+
+* Added public spice_server_set_keepalive_timeout() to make it possible
+  to tweak keepalive on all SPICE connection. This can prevent unwanted
+  idle disconnections if proxies are used between the client and the host.
+* Fix important memory usage when the webdav channel is used
+* Do not disconnect when the client requests an unsupported compression type
+* Fix potential race condition when using multiple QXL devices
+* Fix display glitch when using XSpice
+* Improve help string for 'replay -s'
+* Fix crashes in corner cases (buggy spice-html5 + win10, vnc + SPICE port
+  configured, USB webcam redirection over a slow link)
+* Fix various compilation warning when building on 32 bit machines
+* Do not build static libraries by default, this can be reenabled with
+  --enable-static
+* Fix small leak in MJPEG code
+
 Major changes in 0.12.6:
 ========================
 * Removed spicec client code, it has been superseded by remote-viewer and other
@@ -101,7 +140,7 @@ Major changes in 0.11.3:
  SPICE_MAIN_CAP_AGENT_CONNECTED_TOKENS
  SPICE_MAIN_CAP_SEAMLESS_MIGRATE
 * Misc:
- * char_device.c: Introducing shared flow control code for char devices
+ * char-device.c: Introducing shared flow control code for char devices
  * Enable build without client, cegui and slirp.
 
 Major changes in 0.11.0:
