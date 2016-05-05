@@ -4,7 +4,7 @@
 #
 Name     : spice
 Version  : 0.13.1
-Release  : 5
+Release  : 6
 URL      : http://www.spice-space.org/download/releases/spice-0.13.1.tar.bz2
 Source0  : http://www.spice-space.org/download/releases/spice-0.13.1.tar.bz2
 Summary  : SPICE server library
@@ -51,6 +51,7 @@ lib components for the spice package.
 %setup -q -n spice-0.13.1
 
 %build
+unset LD_AS_NEEDED
 %configure --disable-static --disable-celt051 --without-sasl --enable-lz4 --enable-opengl
 make V=1
 
