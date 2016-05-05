@@ -4,7 +4,7 @@
 #
 Name     : spice
 Version  : 0.13.1
-Release  : 4
+Release  : 5
 URL      : http://www.spice-space.org/download/releases/spice-0.13.1.tar.bz2
 Source0  : http://www.spice-space.org/download/releases/spice-0.13.1.tar.bz2
 Summary  : SPICE server library
