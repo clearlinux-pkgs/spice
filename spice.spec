@@ -4,7 +4,7 @@
 #
 Name     : spice
 Version  : 0.13.1
-Release  : 6
+Release  : 7
 URL      : http://www.spice-space.org/download/releases/spice-0.13.1.tar.bz2
 Source0  : http://www.spice-space.org/download/releases/spice-0.13.1.tar.bz2
 Summary  : SPICE server library
@@ -14,6 +14,7 @@ Requires: spice-lib
 BuildRequires : asciidoc
 BuildRequires : glu-dev
 BuildRequires : libjpeg-turbo-dev
+BuildRequires : llvm-dev
 BuildRequires : lz4-dev
 BuildRequires : mesa-dev
 BuildRequires : pkgconfig(glib-2.0)
@@ -52,6 +53,12 @@ lib components for the spice package.
 
 %build
 unset LD_AS_NEEDED
+export CC=clang
+export CXX=clang++
+export LD=ld.gold
+export CFLAGS="-g -O3 -feliminate-unused-debug-types  -pipe -Wall -D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector --param=ssp-buffer-size=32 -Wformat -Wformat-security -Wl,--copy-dt-needed-entries -m64 -march=westmere  -mtune=native -fasynchronous-unwind-tables -D_REENTRANT  -Wl,-z -Wl,now -Wl,-z -Wl,relro "
+export CXXFLAGS=$CFLAGS
+unset LDFLAGS
 %configure --disable-static --disable-celt051 --without-sasl --enable-lz4 --enable-opengl
 make V=1
 
