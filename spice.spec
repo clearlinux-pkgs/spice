@@ -4,7 +4,7 @@
 #
 Name     : spice
 Version  : 0.12.7
-Release  : 10
+Release  : 11
 URL      : http://www.spice-space.org/download/releases/spice-0.12.7.tar.bz2
 Source0  : http://www.spice-space.org/download/releases/spice-0.12.7.tar.bz2
 Summary  : SPICE server library
