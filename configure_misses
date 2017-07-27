@@ -1,0 +1,45 @@
+Configure miss: clang option to accept ISO C89
+Configure miss: clang option to accept ISO C99
+Configure miss: if clang static flag -static works
+Configure miss: SMARTCARD
+Configure miss: SMARTCARD
+Configure miss: whether -Wno-missing-field-initializers is supported
+Configure miss: whether -Wuninitialized is supported
+Configure miss: whether C compiler handles -Waggressive-loop-optimizations
+Configure miss: whether C compiler handles -Wclobbered
+Configure miss: whether C compiler handles -Wcoverage-mismatch
+Configure miss: whether C compiler handles -Wcpp
+Configure miss: whether C compiler handles -Wformat-contains-nul
+Configure miss: whether C compiler handles -Wfree-nonheap-object
+Configure miss: whether C compiler handles -Winvalid-memory-model
+Configure miss: whether C compiler handles -Wlogical-op
+Configure miss: whether C compiler handles -Wmaybe-uninitialized
+Configure miss: whether C compiler handles -Wmissing-parameter-type
+Configure miss: whether C compiler handles -Wold-style-declaration
+Configure miss: whether C compiler handles -Wopenmp-simd
+Configure miss: whether C compiler handles -Woverride-init
+Configure miss: whether C compiler handles -Wpacked-bitfield-compat
+Configure miss: whether C compiler handles -Wreturn-local-addr
+Configure miss: whether C compiler handles -Wsuggest-attribute=const
+Configure miss: whether C compiler handles -Wsuggest-attribute=format
+Configure miss: whether C compiler handles -Wsuggest-attribute=noreturn
+Configure miss: whether C compiler handles -Wsuggest-attribute=pure
+Configure miss: whether C compiler handles -Wsync-nand
+Configure miss: whether C compiler handles -Wtrampolines
+Configure miss: whether C compiler handles -Wunused-but-set-parameter
+Configure miss: whether C compiler handles -Wunused-but-set-variable
+Configure miss: whether C compiler handles -Wvector-operation-performance
+Configure miss: whether C compiler handles -Wnormalized=nfc
+Configure miss: whether C compiler handles -fipa-pure-const
+Configure miss: whether C compiler handles -Wno-suggest-attribute=pure
+Configure miss: whether C compiler handles -Wno-suggest-attribute=const
+Configure miss: whether C compiler handles -Wjump-misses-init
+Configure miss: clang option to accept ISO C89
+Configure miss: if clang static flag -static works
+Configure miss: clang option to accept ISO C99
+Configure miss: floor
+Configure miss: pow
+Configure miss: sqrt
+Configure miss: SMARTCARD
+Configure miss: SMARTCARD
+Configure miss: OPUS
