@@ -4,7 +4,7 @@
 #
 Name     : spice
 Version  : 0.12.8
-Release  : 12
+Release  : 13
 URL      : http://www.spice-space.org/download/releases/spice-0.12.8.tar.bz2
 Source0  : http://www.spice-space.org/download/releases/spice-0.12.8.tar.bz2
 Summary  : SPICE server library
@@ -24,6 +24,14 @@ BuildRequires : pkgconfig(spice-protocol)
 BuildRequires : pyparsing
 BuildRequires : spice-protocol
 BuildRequires : zlib-dev
+Patch1: 0001-Call-migrate_end_complete-after-falling-back-to-swit.patch
+Patch2: 0002-Prevent-possible-DoS-attempts-during-protocol-handsh.patch
+Patch3: 0003-Prevent-integer-overflows-in-capability-checks.patch
+Patch4: 0004-main-channel-Prevent-overflow-reading-messages-from-.patch
+Patch5: 0005-reds-Check-link-header-magic-without-waiting-for-the.patch
+Patch6: 0006-reds-Disconnect-when-receiving-overly-big-ClientMoni.patch
+Patch7: 0007-reds-Avoid-integer-overflows-handling-monitor-config.patch
+Patch8: 0008-reds-Avoid-buffer-overflows-handling-monitor-configu.patch
 
 %description
 SPICE: Simple Protocol for Independent Computing Environments
@@ -49,13 +57,21 @@ lib components for the spice package.
 
 %prep
 %setup -q -n spice-0.12.8
+%patch1 -p1
+%patch2 -p1
+%patch3 -p1
+%patch4 -p1
+%patch5 -p1
+%patch6 -p1
+%patch7 -p1
+%patch8 -p1
 
 %build
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C
-export SOURCE_DATE_EPOCH=1501160899
+export SOURCE_DATE_EPOCH=1502377633
 unset LD_AS_NEEDED
 export CC=clang
 export CXX=clang++
@@ -72,7 +88,7 @@ export no_proxy=localhost,127.0.0.1,0.0.0.0
 make VERBOSE=1 V=1 check
 
 %install
-export SOURCE_DATE_EPOCH=1501160899
+export SOURCE_DATE_EPOCH=1502377633
 rm -rf %{buildroot}
 %make_install
 
