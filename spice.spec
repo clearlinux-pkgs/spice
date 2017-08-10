@@ -4,7 +4,7 @@
 #
 Name     : spice
 Version  : 0.12.8
-Release  : 13
+Release  : 14
 URL      : http://www.spice-space.org/download/releases/spice-0.12.8.tar.bz2
 Source0  : http://www.spice-space.org/download/releases/spice-0.12.8.tar.bz2
 Summary  : SPICE server library
@@ -32,6 +32,7 @@ Patch5: 0005-reds-Check-link-header-magic-without-waiting-for-the.patch
 Patch6: 0006-reds-Disconnect-when-receiving-overly-big-ClientMoni.patch
 Patch7: 0007-reds-Avoid-integer-overflows-handling-monitor-config.patch
 Patch8: 0008-reds-Avoid-buffer-overflows-handling-monitor-configu.patch
+Patch9: CVE-2017-7506.nopatch
 
 %description
 SPICE: Simple Protocol for Independent Computing Environments
@@ -71,12 +72,16 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C
-export SOURCE_DATE_EPOCH=1502377633
+export SOURCE_DATE_EPOCH=1502379078
 unset LD_AS_NEEDED
 export CC=clang
 export CXX=clang++
 export LD=ld.gold
 unset LDFLAGS
+export CFLAGS="$CFLAGS -fstack-protector-strong "
+export FCFLAGS="$CFLAGS -fstack-protector-strong "
+export FFLAGS="$CFLAGS -fstack-protector-strong "
+export CXXFLAGS="$CXXFLAGS -fstack-protector-strong "
 %configure --disable-static --disable-celt051 --without-sasl --enable-lz4 --enable-opengl=no
 make V=1
 
@@ -88,7 +93,7 @@ export no_proxy=localhost,127.0.0.1,0.0.0.0
 make VERBOSE=1 V=1 check
 
 %install
-export SOURCE_DATE_EPOCH=1502377633
+export SOURCE_DATE_EPOCH=1502379078
 rm -rf %{buildroot}
 %make_install
 

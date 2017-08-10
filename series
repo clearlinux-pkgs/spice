@@ -6,3 +6,4 @@
 0006-reds-Disconnect-when-receiving-overly-big-ClientMoni.patch
 0007-reds-Avoid-integer-overflows-handling-monitor-config.patch
 0008-reds-Avoid-buffer-overflows-handling-monitor-configu.patch
+CVE-2017-7506.nopatch
