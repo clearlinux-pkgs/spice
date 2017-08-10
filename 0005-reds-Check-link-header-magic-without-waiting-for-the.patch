@@ -1,0 +1,74 @@
+From bb79d369e8d0796a5d4f5e578171a1ef807d2ab6 Mon Sep 17 00:00:00 2001
+From: Frediano Ziglio <fziglio@redhat.com>
+Date: Thu, 26 Jan 2017 15:53:18 +0000
+Subject: [PATCH 5/8] reds: Check link header magic without waiting for the
+ whole header
+
+This allows the connection to early fail in case initial bytes
+are not correct.
+This allows for instance VNC client to graceful fail connecting
+to a spice-server. This happens easily as the two protocols
+share the same range of ports.
+
+This resolves rhbz#1416692.
+
+Signed-off-by: Frediano Ziglio <fziglio@redhat.com>
+Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+---
+ server/reds.c | 28 ++++++++++++++++++++--------
+ 1 file changed, 20 insertions(+), 8 deletions(-)
+
+diff --git a/server/reds.c b/server/reds.c
+index 91504544..f439a366 100644
+--- a/server/reds.c
++++ b/server/reds.c
+@@ -2192,12 +2192,6 @@ static void reds_handle_read_header_done(void *opaque)
+     header->minor_version = GUINT32_FROM_LE(header->minor_version);
+     header->size = GUINT32_FROM_LE(header->size);
+ 
+-    if (header->magic != SPICE_MAGIC) {
+-        reds_send_link_error(link, SPICE_LINK_ERR_INVALID_MAGIC);
+-        reds_link_free(link);
+-        return;
+-    }
+-
+     if (header->major_version != SPICE_VERSION_MAJOR) {
+         if (header->major_version > 0) {
+             reds_send_link_error(link, SPICE_LINK_ERR_VERSION_MISMATCH);
+@@ -2227,13 +2221,31 @@ static void reds_handle_read_header_done(void *opaque)
+                            link);
+ }
+ 
++static void reds_handle_read_magic_done(void *opaque)
++{
++    RedLinkInfo *link = (RedLinkInfo *)opaque;
++    const SpiceLinkHeader *header = &link->link_header;
++
++    if (header->magic != SPICE_MAGIC) {
++        reds_send_link_error(link, SPICE_LINK_ERR_INVALID_MAGIC);
++        reds_link_free(link);
++        return;
++    }
++
++    reds_stream_async_read(link->stream,
++                           ((uint8_t *)&link->link_header) + sizeof(header->magic),
++                           sizeof(SpiceLinkHeader) - sizeof(header->magic),
++                           reds_handle_read_header_done,
++                           link);
++}
++
+ static void reds_handle_new_link(RedLinkInfo *link)
+ {
+     reds_stream_set_async_error_handler(link->stream, reds_handle_link_error);
+     reds_stream_async_read(link->stream,
+                            (uint8_t *)&link->link_header,
+-                           sizeof(SpiceLinkHeader),
+-                           reds_handle_read_header_done,
++                           sizeof(link->link_header.magic),
++                           reds_handle_read_magic_done,
+                            link);
+ }
+ 
+-- 
+2.14.0
+
