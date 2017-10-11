@@ -1,9 +1,0 @@
-0001-Call-migrate_end_complete-after-falling-back-to-swit.patch
-0002-Prevent-possible-DoS-attempts-during-protocol-handsh.patch
-0003-Prevent-integer-overflows-in-capability-checks.patch
-0004-main-channel-Prevent-overflow-reading-messages-from-.patch
-0005-reds-Check-link-header-magic-without-waiting-for-the.patch
-0006-reds-Disconnect-when-receiving-overly-big-ClientMoni.patch
-0007-reds-Avoid-integer-overflows-handling-monitor-config.patch
-0008-reds-Avoid-buffer-overflows-handling-monitor-configu.patch
-CVE-2017-7506.nopatch
