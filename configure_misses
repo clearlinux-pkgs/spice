@@ -5,7 +5,6 @@ Configure miss: GSTREAMER_0_10
 Configure miss: whether C compiler handles -Werror -Wunknown-warning-option
 Configure miss: whether -Wno-missing-field-initializers is needed
 Configure miss: floor
-Configure miss: pow
 Configure miss: sqrt
 Configure miss: SMARTCARD
 Configure miss: SMARTCARD
