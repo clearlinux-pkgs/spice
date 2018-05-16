@@ -4,7 +4,7 @@
 #
 Name     : spice
 Version  : 0.14.0
-Release  : 18
+Release  : 19
 URL      : http://www.spice-space.org/download/releases/spice-0.14.0.tar.bz2
 Source0  : http://www.spice-space.org/download/releases/spice-0.14.0.tar.bz2
 Summary  : SPICE server library
@@ -24,6 +24,7 @@ BuildRequires : pkgconfig(orc-0.4)
 BuildRequires : pkgconfig(pixman-1)
 BuildRequires : pkgconfig(spice-protocol)
 BuildRequires : pyparsing
+BuildRequires : python
 BuildRequires : spice-protocol
 BuildRequires : valgrind
 BuildRequires : zlib-dev
@@ -58,12 +59,12 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C
-export SOURCE_DATE_EPOCH=1517701835
+export SOURCE_DATE_EPOCH=1526504750
 unset LD_AS_NEEDED
-export CFLAGS="$CFLAGS -fstack-protector-strong "
-export FCFLAGS="$CFLAGS -fstack-protector-strong "
-export FFLAGS="$CFLAGS -fstack-protector-strong "
-export CXXFLAGS="$CXXFLAGS -fstack-protector-strong "
+export CFLAGS="$CFLAGS -fstack-protector-strong -mzero-caller-saved-regs=used "
+export FCFLAGS="$CFLAGS -fstack-protector-strong -mzero-caller-saved-regs=used "
+export FFLAGS="$CFLAGS -fstack-protector-strong -mzero-caller-saved-regs=used "
+export CXXFLAGS="$CXXFLAGS -fstack-protector-strong -mzero-caller-saved-regs=used "
 %configure --disable-static --disable-celt051 --without-sasl --enable-lz4 --enable-opengl=no
 make
 
@@ -75,7 +76,7 @@ export no_proxy=localhost,127.0.0.1,0.0.0.0
 make VERBOSE=1 V=1 check
 
 %install
-export SOURCE_DATE_EPOCH=1517701835
+export SOURCE_DATE_EPOCH=1526504750
 rm -rf %{buildroot}
 %make_install
 
