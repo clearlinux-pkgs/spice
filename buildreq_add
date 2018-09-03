@@ -10,3 +10,4 @@ asciidoc
 glu-dev
 spice-protocol
 python
+six

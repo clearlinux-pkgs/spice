@@ -4,7 +4,7 @@
 #
 Name     : spice
 Version  : 0.14.0
-Release  : 20
+Release  : 21
 URL      : http://www.spice-space.org/download/releases/spice-0.14.0.tar.bz2
 Source0  : http://www.spice-space.org/download/releases/spice-0.14.0.tar.bz2
 Summary  : SPICE server library
@@ -26,9 +26,11 @@ BuildRequires : pkgconfig(pixman-1)
 BuildRequires : pkgconfig(spice-protocol)
 BuildRequires : pyparsing
 BuildRequires : python
+BuildRequires : six
 BuildRequires : spice-protocol
 BuildRequires : valgrind
 BuildRequires : zlib-dev
+Patch1: CVE-2018-10873.patch
 
 %description
 SPICE: Simple Protocol for Independent Computing Environments
@@ -63,13 +65,14 @@ license components for the spice package.
 
 %prep
 %setup -q -n spice-0.14.0
+%patch1 -p1
 
 %build
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C
-export SOURCE_DATE_EPOCH=1536003369
+export SOURCE_DATE_EPOCH=1536005563
 unset LD_AS_NEEDED
 export CFLAGS="$CFLAGS -fstack-protector-strong -mzero-caller-saved-regs=used "
 export FCFLAGS="$CFLAGS -fstack-protector-strong -mzero-caller-saved-regs=used "
@@ -86,7 +89,7 @@ export no_proxy=localhost,127.0.0.1,0.0.0.0
 make VERBOSE=1 V=1 check
 
 %install
-export SOURCE_DATE_EPOCH=1536003369
+export SOURCE_DATE_EPOCH=1536005563
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/doc/spice
 cp COPYING %{buildroot}/usr/share/doc/spice/COPYING
