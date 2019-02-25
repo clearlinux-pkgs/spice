@@ -11,3 +11,7 @@ glu-dev
 spice-protocol
 python
 six
+glib-networking
+gdb
+strace
+joe

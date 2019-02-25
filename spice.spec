@@ -5,22 +5,28 @@
 # Source0 file verified with key 0xA9D8C21429AC6C82 (teuf@gnome.org)
 #
 Name     : spice
-Version  : 0.14.0
-Release  : 23
-URL      : http://www.spice-space.org/download/releases/spice-0.14.0.tar.bz2
-Source0  : http://www.spice-space.org/download/releases/spice-0.14.0.tar.bz2
-Source99 : http://www.spice-space.org/download/releases/spice-0.14.0.tar.bz2.sign
+Version  : 0.14.1
+Release  : 25
+URL      : https://www.spice-space.org/download/releases/spice-server/spice-0.14.1.tar.bz2
+Source0  : https://www.spice-space.org/download/releases/spice-server/spice-0.14.1.tar.bz2
+Source99 : https://www.spice-space.org/download/releases/spice-server/spice-0.14.1.tar.bz2.sign
 Summary  : SPICE server library
 Group    : Development/Tools
 License  : LGPL-2.1
 Requires: spice-lib = %{version}-%{release}
 Requires: spice-license = %{version}-%{release}
+Requires: glib-networking
 BuildRequires : asciidoc
+BuildRequires : buildreq-meson
+BuildRequires : gdb
+BuildRequires : glib-networking
 BuildRequires : glu-dev
+BuildRequires : joe
 BuildRequires : libjpeg-turbo-dev
 BuildRequires : lz4-dev
 BuildRequires : mesa-dev
 BuildRequires : pkgconfig(gio-2.0)
+BuildRequires : pkgconfig(gio-unix-2.0)
 BuildRequires : pkgconfig(glib-2.0)
 BuildRequires : pkgconfig(gobject-2.0)
 BuildRequires : pkgconfig(openssl)
@@ -31,9 +37,9 @@ BuildRequires : pyparsing
 BuildRequires : python
 BuildRequires : six
 BuildRequires : spice-protocol
+BuildRequires : strace
 BuildRequires : valgrind
 BuildRequires : zlib-dev
-Patch1: CVE-2018-10873.patch
 
 %description
 SPICE: Simple Protocol for Independent Computing Environments
@@ -67,36 +73,29 @@ license components for the spice package.
 
 
 %prep
-%setup -q -n spice-0.14.0
-%patch1 -p1
+%setup -q -n spice-0.14.1
 
 %build
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C
-export SOURCE_DATE_EPOCH=1542433824
+export SOURCE_DATE_EPOCH=1553556430
 unset LD_AS_NEEDED
+export LDFLAGS="${LDFLAGS} -fno-lto"
 export CFLAGS="$CFLAGS -fstack-protector-strong -mzero-caller-saved-regs=used "
 export FCFLAGS="$CFLAGS -fstack-protector-strong -mzero-caller-saved-regs=used "
 export FFLAGS="$CFLAGS -fstack-protector-strong -mzero-caller-saved-regs=used "
 export CXXFLAGS="$CXXFLAGS -fstack-protector-strong -mzero-caller-saved-regs=used "
-%configure --disable-static --disable-celt051 --without-sasl --enable-lz4 --enable-opengl=no
+%configure --disable-static --disable-celt051 --without-sasl --enable-lz4 --enable-opengl=no  --disable-opus
 make
 
-%check
-export LANG=C
-export http_proxy=http://127.0.0.1:9/
-export https_proxy=http://127.0.0.1:9/
-export no_proxy=localhost,127.0.0.1,0.0.0.0
-make VERBOSE=1 V=1 check
-
 %install
-export SOURCE_DATE_EPOCH=1542433824
+export SOURCE_DATE_EPOCH=1553556430
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/spice
 cp COPYING %{buildroot}/usr/share/package-licenses/spice/COPYING
-cp spice-common/COPYING %{buildroot}/usr/share/package-licenses/spice/spice-common_COPYING
+cp subprojects/spice-common/COPYING %{buildroot}/usr/share/package-licenses/spice/subprojects_spice-common_COPYING
 %make_install
 
 %files
@@ -121,9 +120,9 @@ cp spice-common/COPYING %{buildroot}/usr/share/package-licenses/spice/spice-comm
 %files lib
 %defattr(-,root,root,-)
 /usr/lib64/libspice-server.so.1
-/usr/lib64/libspice-server.so.1.12.4
+/usr/lib64/libspice-server.so.1.12.5
 
 %files license
 %defattr(0644,root,root,0755)
 /usr/share/package-licenses/spice/COPYING
-/usr/share/package-licenses/spice/spice-common_COPYING
+/usr/share/package-licenses/spice/subprojects_spice-common_COPYING

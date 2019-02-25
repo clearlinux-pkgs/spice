@@ -1,0 +1,43 @@
+option('alignment-checks',
+    type : 'boolean',
+    value : false,
+    yield : true,
+    description : 'Enable runtime checks for cast alignment')
+
+option('extra-checks',
+    type : 'boolean',
+    value : false,
+    yield : true,
+    description : 'Enable extra checks on code')
+
+option('celt051',
+    type : 'feature',
+    yield : true,
+    description: 'Enable celt051 audio codec')
+
+option('opus',
+    type : 'feature',
+    yield : true,
+    description: 'Enable Opus audio codec')
+
+option('smartcard',
+    type : 'boolean',
+    value : true,
+    yield : true,
+    description : 'Enable smartcard support')
+
+option('python-checks',
+    type : 'boolean',
+    value : true,
+    description : 'Enable checks for Python modules needed to build from git')
+
+option('manual',
+    type : 'boolean',
+    value : true,
+    yield : true,
+    description : 'Build SPICE manual')
+
+option('generate-code',
+    type : 'combo',
+    choices : ['all', 'server', 'client'],
+    description : 'Which code should be built')
