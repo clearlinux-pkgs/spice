@@ -6,7 +6,7 @@
 #
 Name     : spice
 Version  : 0.14.1
-Release  : 25
+Release  : 26
 URL      : https://www.spice-space.org/download/releases/spice-server/spice-0.14.1.tar.bz2
 Source0  : https://www.spice-space.org/download/releases/spice-server/spice-0.14.1.tar.bz2
 Source99 : https://www.spice-space.org/download/releases/spice-server/spice-0.14.1.tar.bz2.sign
