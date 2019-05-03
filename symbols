@@ -12,6 +12,7 @@ libspice-server.so.1:SPICE_SERVER_0.12.5
 libspice-server.so.1:SPICE_SERVER_0.12.6
 libspice-server.so.1:SPICE_SERVER_0.13.1
 libspice-server.so.1:SPICE_SERVER_0.13.2
+libspice-server.so.1:SPICE_SERVER_0.14.2
 libspice-server.so.1:SPICE_SERVER_0.6.0
 libspice-server.so.1:SPICE_SERVER_0.6.1
 libspice-server.so.1:SPICE_SERVER_0.8.0
@@ -40,6 +41,7 @@ libspice-server.so.1:spice_qxl_oom
 libspice-server.so.1:spice_qxl_reset_cursor
 libspice-server.so.1:spice_qxl_reset_image_cache
 libspice-server.so.1:spice_qxl_reset_memslots
+libspice-server.so.1:spice_qxl_set_device_info
 libspice-server.so.1:spice_qxl_set_max_monitors
 libspice-server.so.1:spice_qxl_start
 libspice-server.so.1:spice_qxl_stop

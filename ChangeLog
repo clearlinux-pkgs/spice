@@ -1,3 +1,1315 @@
+2019-04-30  Frediano Ziglio  <fziglio@redhat.com>
+
+	build: Prepare for 0.14.2 release
+	Acked-by: Victor Toso <victortoso@redhat.com>
+
+2019-04-30  Benjamin Tissoires  <benjamin.tissoires@redhat.com>
+
+	inputs-channel: Attempt to have a reliable led state
+	We can not consider the qemu led state to be reliable. It by default has
+	50ms of delay, so if we want to achieve something reliable, this won't do.
+
+	We need to keep our own internal state, and consider it as reliable.
+	We update it immediately after receiving the key presses, meaning that this
+	is now the future state of the guest.
+
+	When we receive a keymap event, we check against this 'ideal' state and
+	only update the guest if we 'counted' that it won't have the correct state.
+
+	When the guest notifies its change, the modifiers_watch is supposed to
+	fix any wrong state.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2019-04-26  Frediano Ziglio  <fziglio@redhat.com>
+
+	Update spice-protocol version
+	We require version after 0.12.15 which was released as 0.14.0.
+	Check against a valid released instead of checking for a non existing one.
+
+	Acked-by: Victor Toso <victortoso@redhat.com>
+
+	meson: Bump libcacard requirement to 2.5.1
+	This had already been done for Meson in commit
+	afb2ec312bde342b8538451c6ae15a7f3bdd494f.
+
+	Acked-by: Victor Toso <victortoso@redhat.com>
+
+2019-04-11  Francois Gouget  <fgouget@codeweavers.com>
+
+	video-stream: use the dcc local variable
+	In update_client_playback_delay()
+
+	Acked-by: Victor Toso <victortoso@redhat.com>
+
+2019-04-05  Frediano Ziglio  <fziglio@redhat.com>
+
+	Fix meson build importing spice-common fix
+	This brings in the following changes:
+
+	Eduardo Lima (Etrunko) (1):
+	      meson: Make targets list store dictionaries instead of lists
+
+	Frediano Ziglio (2):
+	      meson: Fix dependency of generated files
+	      meson: Do not build generated files twice
+
+	Acked-by: Victor Toso <victortoso@redhat.com>
+
+2019-04-03  Frediano Ziglio  <fziglio@redhat.com>
+
+	Update spice-common submodule
+	This brings in the following changes:
+
+	Christophe Fergeau (8):
+	      canvas_base: Fix variable shadowing warning
+	      backtrace: Add missing include
+	      lz: Don't try to print uninitialized variable
+	      build: Add missing G_GNUC_PRINTF annotations
+	      build: Update verify.h to latest version
+	      test-marshallers: Fix header guard
+	      quic: Fix QUIC_VERSION definition
+	      log: Let gcc know about the logging macros which abort
+
+	Frediano Ziglio (13):
+	      codegen: Rename --prefix parameter to --suffix
+	      ci: Remove dependencies from copr build
+	      build: Remove snd_codec.h from EXTRA_DIST
+	      test-ssl-verify: Improve subject_to_x509_name coverage
+	      meson: Remove some useless checks
+	      codegen: Factor out a function to write output file
+	      codegen: Generate headers while generating code
+	      codegen: Allows to generate C declarations automatically
+	      Allow to generate C declarations for spice.proto
+	      Generate automatically most C message declarations
+	      recorder: Update
+	      build: Add new check for recorder library
+	      proto: Fix typo in message name
+
+	Acked-by: Victor Toso <victortoso@redhat.com>
+
+2019-03-29  Frediano Ziglio  <fziglio@redhat.com>
+
+	red-worker: Remove unused definitions
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+	red-worker: Use bool for driver_cap_monitors_config
+	Easier to understand.
+
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+	red-channel: Small comment on "core" field
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+2019-03-28  Frediano Ziglio  <fziglio@redhat.com>
+
+	display-channel: Inline red_migrate_display function
+	The only caller only called that function.
+
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	Move image_compression field from RedWorker to DisplayChannel
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	Check image compression value earlier
+	Do not check it after assigning to reds->config->image_compression,
+	check the value as soon as possible.
+	This prevent potential invalid settings.
+
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	red-worker: Remove only assigned fields
+	DisplayChannelClient get them directly from reds (they are changed
+	only during initialisation so they can be read freely from any
+	thread).
+
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+2019-03-28  Jonathon Jongsma  <jjongsma@redhat.com>
+
+	Make channel client callbacks virtual functions
+	Rather than having an API to register client callbacks for each channel
+	type, make them vfuncs.
+
+	Since the client callbacks are registered identically for each channel
+	of the same type, it doesn't make sense for to require these to be
+	registered separately for each object.  It's cleaner to have these be
+	per-class properties, so they've been converted to virtual functions.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2019-03-28  Frediano Ziglio  <fziglio@redhat.com>
+
+	Check running state in red_qxl_set_client_capabilities
+	No reasons to expose red_qxl_is_running, this was used to not
+	send capability is the state was not running.
+
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	Move DisplayChannel callbacks from RedWorker to DisplayChannel
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+2019-03-28  Jonathon Jongsma  <jjongsma@redhat.com>
+
+	Save running property in QXLState
+	This is a preparatory patch that states the running property in QXLState
+	and provides accessor functions that allows us to check whether the QXL
+	device is running from different threads.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2019-03-28  Frediano Ziglio  <fziglio@redhat.com>
+
+	Move thread/dispatching handling to RedChannel
+	Currently channel threading/handling is spread between RedQxl,
+	RedWorker and RedChannel.
+	Move more to RedChannel simplify RedQxl and RedWorker.
+
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	dispatcher: Allows to manage messages without registering them
+	The only way to add new message to Dispatcher was to register
+	using a number. These numbers corresponded to array indexes.
+	This is good if the list of messages is allocated statically
+	and contiguously, on the contrary this method is not that
+	flexible.
+	Writing a header of 4 or 16 bytes using system call does not
+	make much difference so pass all message information in the
+	payload header.
+	A new dispatcher_send_message_custom function allows to send
+	a message passing all message information, including the
+	pointer to the handler.
+	This will allow for instance a Dispatcher associate to a given
+	thread to be reused by different classes.
+
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+2019-03-27  Frediano Ziglio  <fziglio@redhat.com>
+
+	docs: Fix typo
+	Acked-by: Uri Lublin <uril@redhat.com>
+
+2019-03-26  Frediano Ziglio  <fziglio@redhat.com>
+
+	build: Clean a generated file
+	Acked-by: Eduardo Lima (Etrunko) <etrunko@redhat.com>
+
+2019-03-22  谢 昆明  <kunming.xie@hotmail.com>
+
+	Remove a duplicated line
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2019-03-21  Francois Gouget  <fgouget@codeweavers.com>
+
+	Consistently check if drm_dma_buf_fd is greater or lower than zero
+	Based on a patch by Frediano Ziglio.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	dcc: Remove a redundant NULL pointer check in dcc_create_surface()
+	dcc_create_surface() already returns immediately if dcc is NULL.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2019-03-21  Christophe Fergeau  <cfergeau@redhat.com>
+
+	worker: Fix potential sprintf overflow
+	If worker->qxl->id is bigger than 0x7ffffff (in other words, it's a
+	negative signed int) then
+	printf(worker_str, "display[%d]", worker->qxl->id);
+	will need:
+
+	"display[]" -> 9 bytes
+	%d -> 11 bytes
+
+	The trailing \0 will thus overflow our 20 bytes destination.
+	As QXLInstance::id should be an unsigned int, this commit changes the
+	format string to use %u. This also switches to snprintf.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2019-03-21  Frediano Ziglio  <fziglio@redhat.com>
+
+	red-worker: Use mnemonic for statistic buffer
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+2019-03-20  Frediano Ziglio  <fziglio@redhat.com>
+
+	main-dispatcher: Use reds as opaque for dispatcher
+	No reason to pass through MainDispatcher, the purpose of
+	MainDispatcher is to call reds functions from the right thread.
+
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	main-dispatcher: Inline main_dispatcher_self_handle_channel_event
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	dispatcher: Use NULL for pointer check
+	handler is a pointer, check for NULL, not 0.
+
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	reds: Check we don't register a channel twice in reds_register_channel
+	To avoid potential regressions, check it only if extra checks are
+	enabled.
+	This allows to check previous "Move channel registration to constructed
+	vfunc" commit.
+
+	Acked-by: Snir Sheriber <ssheribe@redhat.com>
+
+2019-03-19  Frediano Ziglio  <fziglio@redhat.com>
+
+	test-stream-device: Remove interface before next loop
+	We should not reuse the same interface twice as doing so will
+	cause dangling pointers.
+	Unregister it at every iteration.
+
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+2019-03-18  Frediano Ziglio  <fziglio@redhat.com>
+
+	Remove support for 64 bit pointers on protocol
+	Import "codegen: Remove support for --ptrsize" change from spice-common
+	and update code accordingly.
+
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+	Update spice-common submodule
+	This brings in the following changes:
+
+	Frediano Ziglio (11):
+	      codegen: Document ptr_array attribute
+	      codegen: Use a better type for pointer converted to integer
+	      codegen: Reduce indentation
+	      codegen: Fix c_type result for TypeAlias
+	      codegen: Check wrong attribute
+	      codegen: Add a test for attribute combination
+	      mem: Fix compile error if alignment-checks option is used
+	      log: Remove useless includes
+	      proto: Remove obsolete TunnelChannel
+	      protocol: Add a dummy TunnelChannel
+	      messages: Remove fields not used by the protocol
+
+	Marc-André Lureau (1):
+	      docs: add spice URI scheme
+
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+	syntax-check: Add missing contributors names to AUTHORS
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+2019-03-18  Douglas Paul  <doug@bogon.ca>
+
+	video-stream: prevent crash on stream reattach
+	I experienced some crashes with qemu 3.1.0 compiled with libspice-server
+	0.14.0 on Gentoo.
+
+	The problem reproduced reliably with a guest running Ubuntu 18.04.2 LTS.
+	If I connect a viewer at system startup, I would get a crash just after
+	the fade-in of the login prompt in GDM.
+
+	Interestingly, I usually was unable to reproduce the issue if I waited
+	to connect until after the greeter was fully displayed.
+
+	The patch I used to correct the issue for me applies to the master
+	branch cleanly, so I suspect the problem may still exist.
+
+	The only other references to this issue I could find were two abrt
+	reports in CentOS:
+	https://bugs.centos.org/view.php?id=15171
+	https://bugs.centos.org/view.php?id=15441
+
+	I'm not sure if the agent->video_encoder is supposed to be guaranteed to
+	exist when this function is called.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2019-03-15  Jonathon Jongsma  <jjongsma@redhat.com>
+
+	Move channel registration to constructed vfunc
+	For the Display Channel and the Cursor channel, move the call to
+	reds_register_channel() to the _constructed() vfunc rather than calling
+	it explicitly from RedWorker. This matches what other channels do.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2019-03-11  Victor Toso  <me@victortoso.com>
+
+	display-channel: monitors config debug: add head number
+	The difference is subtle but compared to what client receives, this
+	could help identify values set to the wrong head, e.g:
+
+	First we received:
+	 | display-channel.c:180:monitors_config_debug: monitors config count:2 max:4
+	 | display-channel.c:184:monitors_config_debug: +0+0 1015x805
+	 | display-channel.c:184:monitors_config_debug: +1015+0 1024x740
+
+	And then:
+	 | display-channel.c:180:monitors_config_debug: monitors config count:3 max:4
+	 | display-channel.c:184:monitors_config_debug: +0+0 1015x805
+	 | display-channel.c:184:monitors_config_debug: +0+0 0x0
+	 | display-channel.c:184:monitors_config_debug: +1015+0 1024x740
+
+	In the first debug it would be helpful to have "head 0" and "head 1",
+	to point out the temporary error in monitor's config message.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2019-03-06  Jonathon Jongsma  <jjongsma@redhat.com>
+
+	Switch some boolean fields to 'bool' type
+	For coding style consistency, use 'bool' when we want to represent a
+	boolean value.
+
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+	Only send device display info to supported agents
+	Only send the graphics device display info to agents that advertise the
+	VD_AGENT_CAP_GRAPHICS_DEVICE_INFO capability
+
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+	Refactor agent_adjust_capabilities() function
+	Make this a RedsState member function rather than a standalone function.
+	This means that we simply pass RedsState* as an argument rather than the
+	internal member variables of RedsState. This enables the following
+	commit which handles the VD_AGENT_CAP_GRAPHICS_DEVICE_INFO capability to
+	avoid sending graphics device info to agents that do not support it.
+
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+2019-03-06  Frediano Ziglio  <fziglio@redhat.com>
+
+	test-stat: Adjust delay checks
+	usleep under Windows does not seem to have the required precision.
+	Use milliseconds and adjust check times according.
+
+	Reviewed-by: Marc-André Lureau <marcandre.lureau@redhat.com>
+
+2019-03-05  Frediano Ziglio  <fziglio@redhat.com>
+
+	Use proper format strings for spice_log
+	Formatting string should be compatible with GLib.
+	GLib uses formatting types compatible with GNU.
+	For Linux this is not an issue as both systems (like a printf) and
+	GLib one uses the same formatting type.  However on Windows they
+	differs potentially causing issues.
+	This is also make worse as GLib 2.58 changed format attribute from
+	__printf__ to gnu_printf (Microsoft compatibility formats like %I64d
+	are still supported but you'll get warnings using GCC/Clang
+	compilers).
+
+	Reviewed-by: Marc-André Lureau <marcandre.lureau@redhat.com>
+
+2019-02-23  Frediano Ziglio  <fziglio@redhat.com>
+
+	red-pipe-item: Removed some not necessary headers inclusions
+	RedPipeItem is not using the Ring structures anymore.
+	Also is not using GLib functionality.
+	Just include base headers.
+
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+2019-02-14  Frediano Ziglio  <fziglio@redhat.com>
+
+	reds: Check QXL ID registering interface
+	Avoid to register multiple interface with the same ID.
+	This would result in issues as 2 channels would have the same
+	(channel_type, channel_id) which must be unique.
+	Qemu always allocates QXL interface with IDs starting from 0.
+
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+	reds: Reuse agent_dev local variable
+	The field is only assigned in do_spice_init, surely won't change
+	in the meanwhile.
+
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+	reds: Use proper enumeration for read_state field
+	Allows the compiler to catch some additional errors.
+
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+2019-02-13  Eduardo Lima (Etrunko)  <etrunko@redhat.com>
+
+	meson: switch smartcard option to auto feature
+	Make it compatible with spice-common.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	meson: Bump libcacard requirement to 2.5.1
+	This had already been done for autotools in spice-common commit
+	924f47a653bd87fbd50229ee34b58d7b9a3f1ec8.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	meson: Use gnu_symbol_visibility keyword introduced in meson 0.48
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2019-02-12  Frediano Ziglio  <fziglio@redhat.com>
+
+	Remove core parameter from main_dispatcher_new
+	This was added in bd8771adbcf3ff34d14333cf874191e8d105f612.
+	There's no reason to not use reds function instead.
+	MainDispatcher needs to listen in the main thread that is the
+	one provided by reds_core_* functions.
+
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	test-stream-device: Check monitor ID messages
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	reds: Factor out a function to marshal VDAgentGraphicsDeviceInfo message
+	Instead of scanning the monitor twice (one to compute the size
+	and another to build the message) use a single function to
+	marshal the message.
+	This also fixes big endian machines (which are not supported).
+	Marshal function is exported to make easier to test (see following
+	patch).
+
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	agent-msg-filter: Simplify code
+	Most of the time result is set to AGENT_MSG_FILTER_OK, set at
+	the beginning and change if necessary.
+
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+2019-02-11  Frediano Ziglio  <fziglio@redhat.com>
+
+	reds: Fix typo in comment
+
+	reds: Fix typos in comments
+	Acked-by: Eduardo Lima (Etrunko) <etrunko@redhat.com>
+
+	agent-msg-filter: Add some comments to AgentMsgFilter structure
+	Acked-by: Eduardo Lima (Etrunko) <etrunko@redhat.com>
+
+	smartcard-channel-client: Update usage of GObject private structures
+	This finished the work of 90ff154b36b3ab80350cb4a4d391db330bed2a76
+	(cfr "Update usage of GObject private structures").
+	Removes last call to g_type_class_add_private.
+
+	Acked-by: Eduardo Lima (Etrunko) <etrunko@redhat.com>
+
+2019-02-11  Christophe Fergeau  <cfergeau@redhat.com>
+
+	smartcard: Improve on_message_from_device readability
+	This removes a not really useful switch/case, and changes the function
+	to exit early on error cases, rather than exiting early in the nominal
+	case.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	smartcard: Rework smartcard_get_vsc_msg_item a bit
+	This renames the method to smartcard_new_vsc_msg_item as this creates a
+	new object. This also removes the creation of a temporary VHeader which
+	is then going to be duplicated.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	smartcard: Remove redundant test in smartcard_char_device_on_message_from_device()
+	The function returns NULL if vheader->type is VSC_Init so no need to
+	check it a second time.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	smartcard: Remove unused smartcard_get_vsc_msg_item argument
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2019-02-08  Christophe Fergeau  <cfergeau@redhat.com>
+
+	char-device: Make send_tokens_to_client() optional
+	Only RedCharDeviceVDIPortClass implements this vfunc, rather than
+	forcing every classes deriving from RedCharDeviceClass to implement it,
+	red_char_device_send_tokens_to_client() can deal with it.
+
+	Acked-by: Uri Lublin <uril@redhat.com>
+
+	doc: Document G_MESSAGES_DEBUG use
+	Explain how to get more verbose logs out of spice-server
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2019-02-08  Eduardo Lima (Etrunko)  <etrunko@redhat.com>
+
+	Update usage of GObject private structures
+	New functions and macros have been added in glib 2.38 to better handle
+	this case.
+
+	https://gitlab.gnome.org/GNOME/glib/blob/c8de2b11bbbf5705ee20bf68d0c11e455b441312/NEWS
+
+	G_TYPE_INSTANCE_GET_PRIVATE will be deprecated in GLib 2.58.
+
+	https://gitlab.gnome.org/GNOME/glib/merge_requests/7/commits
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2019-02-07  Christophe Fergeau  <cfergeau@redhat.com>
+
+	ssl: Dump OpenSSL error stack on errors
+	Bugs such as https://bugzilla.redhat.com/show_bug.cgi?id=1651882 can be
+	quite tricky to figure out without the detailed OpenSSL error. This
+	commit adds a detailed dump of the OpenSSL error stack when an OpenSSL
+	failure happens.
+
+	In the bug above, this would have displayed:
+	(process:13154): Spice-WARNING **: 05:43:10.139: reds.c:2816:reds_init_ssl: Could not load certificates from /etc/pki/libvirt-spice/server-cert.pem
+
+	(process:13154): Spice-WARNING **: 05:43:10.140: error:140AB18F:SSL routines:SSL_CTX_use_certificate:ee key too small
+
+	Acked-by: Uri Lublin <uril@redhat.com>
+
+2019-02-05  Christophe Fergeau  <cfergeau@redhat.com>
+
+	memslot: Fix off-by-one error in group/slot boundary check
+	RedMemSlotInfo keeps an array of groups, and each group contains an
+	array of slots. Unfortunately, these checks are off by 1, they check
+	that the index is greater or equal to the number of elements in the
+	array, while these arrays are 0 based. The check should only check for
+	strictly greater than the number of elements.
+
+	For the group array, this is not a big issue, as these memslot groups
+	are created by spice-server users (eg QEMU), and the group ids used to
+	index that array are also generated by the spice-server user, so it
+	should not be possible for the guest to set them to arbitrary values.
+
+	The slot id is more problematic, as it's calculated from a QXLPHYSICAL
+	address, and such addresses are usually set by the guest QXL driver, so
+	the guest can set these to arbitrary values, including malicious values,
+	which are probably easy to build from the guest PCI configuration.
+
+	This patch fixes the arrays bound check, and adds a test case for this.
+	This fixes CVE-2019-3813.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	build-sys: Raise glib requirement to 2.38
+	meson is already using 2.38, and most distros have a newer version:
+	    - Fedora 28 has 2.56
+	    - CentOS 7 has 2.46
+	    - Debian 9 has 2.50
+
+	This also matches what spice-common requires.
+
+	Acked-by: Eduardo Lima (Etrunko) <etrunko@redhat.com>
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2019-02-04  Frediano Ziglio  <fziglio@redhat.com>
+
+	red-stream-device: Constify stream_device_get_device_display_info result
+	There should be no reason for the caller to modify the internal
+	structure.
+
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+2019-02-01  Eduardo Lima (Etrunko)  <etrunko@redhat.com>
+
+	meson: Use underscorify() instead of split()
+
+	m4: Remove repeated warnings suppression
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2019-01-31  Frediano Ziglio  <fziglio@redhat.com>
+
+	event-loop: Port to Windows
+	Use g_io_channel_win32_new_socket instead of g_io_channel_unix_new
+
+	Reviewed-by: Marc-André Lureau <marcandre.lureau@redhat.com>
+
+	replay: Port to Windows
+	Client process termination did not work for Windows, used Win32
+	APIs.
+
+	Reviewed-by: Marc-André Lureau <marcandre.lureau@redhat.com>
+
+	test-listen: Exclude Unix sockets part under Windows
+	Windows does not support Unix sockets.
+
+	Reviewed-by: Marc-André Lureau <marcandre.lureau@redhat.com>
+
+	reds: Explicitly include inttypes.h
+	MingW does not include this header while including stdint.h so
+	on Windows you need to include it.
+
+	Reviewed-by: Marc-André Lureau <marcandre.lureau@redhat.com>
+
+	windows: Do not include headers not available on Windows
+	This is a preparatory patch for next portability patches
+
+	Reviewed-by: Marc-André Lureau <marcandre.lureau@redhat.com>
+
+	red-qxl: Use proper formatting string for size_t
+	Avoids issues with LLP64 systems.
+
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+2019-01-30  Frediano Ziglio  <fziglio@redhat.com>
+
+	display-channel: Remove unused includes
+	display-channel.h is not using any of the definition from
+	these headers.
+	Adding a missing include to red-worker.c.
+
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+	red-stream-device: Fix "make syntax-check"
+	Avoid using strncpy, considered not secure.
+	In this case a simple memcpy is used, we are going to terminate
+	the string in any case on the next line.
+
+	Acked-by: Lukáš Hrázký <lhrazky@redhat.com>
+
+	image-encoders: Initialize Zlib lazily
+	Zlib structure take up more than 1MB and it is rarely used nowadays
+	as it is not much effective.
+	Initialise it only when necessary saving some memory in the normal
+	case.
+
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+2019-01-30  Uri Lublin  <uril@redhat.com>
+
+	smartcard: do not keep weak ref when device is NULL
+	When a client disconnects, smartcard_channel_client_set_char_device
+	is called with a NULL "device" argument. In that case there is
+	no need to take a weak reference to the device.
+
+	Without this patch the server complains:
+	  g_object_add_weak_pointer: assertion 'G_IS_OBJECT (object)' failed
+
+	and aborts when a second client attempts to connect.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2019-01-29  Lukáš Hrázký  <lhrazky@redhat.com>
+
+	Send the graphics device info from streaming agent to the vd_agent
+	Adds the graphics device info from the streaming device(s) to the
+	VDAgentGraphicsDeviceInfo message sent to the vd_agent.
+
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	Receive the GraphicsDeviceInfo message from the streaming agent
+	Receives the GraphicsDeviceInfo message from the streaming agent and
+	stores the data in a list on the streaming device.
+
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	Send the graphics device info to the vd_agent
+	Sends the device address and device display IDs to the vdagent. The
+	message is sent either in reaction to the SPICE_MSGC_MAIN_AGENT_START
+	message or when the graphics device info changes.
+
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+2019-01-28  Lukáš Hrázký  <lhrazky@redhat.com>
+
+	QXL interface: improve the spice_qxl_set_device_info documentation
+	Instead of one unsupported example, present two real world examples.
+
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+2019-01-26  Lukáš Hrázký  <lhrazky@redhat.com>
+
+	QXL interface: deprecate spice_qxl_set_max_monitors
+	Replace it by spice_qxl_set_device_info. Note we can't use
+	monitors_count for what's stored in max_monitors, because monitors_count
+	denotes the length of the device_display_ids array, which
+	spice_qxl_set_max_monitors doesn't touch.
+
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	QXL interface: add a function to identify monitors in the guest
+	Adds a function to let QEMU provide information to identify graphics
+	devices and their monitors in the guest. The function
+	(spice_qxl_set_device_info) sets the device address (e.g. a PCI path)
+	and monitor ID -> device display ID mapping of displays exposed by given
+	QXL interface.
+
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+2019-01-23  Frediano Ziglio  <fziglio@redhat.com>
+
+	red-worker: Remove obsolete type definition
+	AsyncCommand was removed in eb6c8ba025.
+
+	Acked-by: Victor Toso <victortoso@redhat.com>
+
+	ci: Remove dependencies from copr build
+	Acked-by: Eduardo Lima (Etrunko) <etrunko@redhat.com>
+
+	Trace streaming device data using recorder
+	Trace when data is received from the guest and when is sent
+	to the client.
+
+	Acked-by: Victor Toso <victortoso@redhat.com>
+
+	Allows to enable recorder integration
+	recorder library will be used to collect some statistics during
+	development.
+
+	Acked-by: Victor Toso <victortoso@redhat.com>
+
+	Update spice-common submodule
+	This brings in the following changes:
+
+	Frediano Ziglio (11):
+	      Update --enable-celt051 help string
+	      test-marshaller: Make test_overflow static
+	      test-marshaller: Make main declaration easier
+	      test-region: Add missing dependencies
+	      ci: Run tests on Windows using wine
+	      Use a single copy of subject string
+	      log: Use proper format attribute for spice_log
+	      marshaller: Provide spice_marshaller_fill_iovec for Windows
+	      test: Add a test for subject_to_x509_name function
+	      lz: Avoid buffer reading overflow checking for image type
+	      lz: More checks on image sizes
+
+	Jonathon Jongsma (1):
+	      Fix some additional typos
+
+	Marc-André Lureau (5):
+	      Bump libcacard requirement to 2.5.1
+	      Add a .gitpublish
+	      build-sys: improve asciidoc rules to allow multiple targets
+	      quic: fix sign-compare warning
+	      meson: fix building for big-endian host
+
+	Acked-by: Victor Toso <victortoso@redhat.com>
+
+2019-01-17  Frediano Ziglio  <fziglio@redhat.com>
+
+	Reuse SPICE_UPCAST instead of SPICE_CONTAINEROF where possible
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+2019-01-15  Christophe Fergeau  <cfergeau@redhat.com>
+
+	sasl: Simplify red_stream_write_u32_le call with '0' serveroutlen
+	Instead of
+	if (serveroutlen) {
+	...
+	} else {
+	    red_stream_write_u32_le(stream, serveroutlen);
+	}
+
+	use 'red_stream_write_u32_le(stream, 0);' in the else block as it's
+	slightly more obvious.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2019-01-08  Frediano Ziglio  <fziglio@redhat.com>
+
+	red-replay-qxl: Use PRIxPTR constant for string formatting
+	These constants are meant to be used in format string for pointers
+	types. Use them for portability.
+
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+2019-01-03  Frediano Ziglio  <fziglio@redhat.com>
+
+	test-display-base: Remove error from "make syntax-check"
+	Due to previous commit "make syntax-check" command reports:
+
+	prohibit_signal_without_use
+	server/tests/test-display-base.c
+	maint.mk: the above files include signal.h but don't use it
+	make: *** [maint.mk:639: sc_prohibit_signal_without_use] Error 1
+
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+	test-display-base: Port to Windows
+	Use GLib function to launch and wait process exit.
+
+	Reviewed-by: Marc-André Lureau <marcandre.lureau@redhat.com>
+
+	replay: Force binary mode on input on Windows
+	If input contains the binary record we can't have it modified
+	during read.
+
+	Reviewed-by: Marc-André Lureau <marcandre.lureau@redhat.com>
+
+2018-12-25  Frediano Ziglio  <fziglio@redhat.com>
+
+	test-playback: Simplify wave generation formulae
+	Split level computation, make clear is a sine wave on both channels.
+
+	Acked-by: Uri Lublin <uril@redhat.com>
+
+	test-playback: Remove obsolete debug
+	Acked-by: Uri Lublin <uril@redhat.com>
+
+	test-playback: Update misleading comments
+	We are waiting for a client connection, channel is already there
+
+	Acked-by: Uri Lublin <uril@redhat.com>
+
+	test-playback: Remove useless check for "frame"
+	We just fill it up, can't be NULL.
+
+	Acked-by: Uri Lublin <uril@redhat.com>
+
+2018-12-23  Frediano Ziglio  <fziglio@redhat.com>
+
+	reds_stat: Use EXIT_SUCCESS/EXIT_FAILURE for program result
+	-1 is not much portable and standard.
+
+	Acked-by: Snir Sheriber <ssheribe@redhat.com>
+
+	reds_stat: Print errors on standard error, not standard output
+	Acked-by: Snir Sheriber <ssheribe@redhat.com>
+
+2018-12-07  Frediano Ziglio  <fziglio@redhat.com>
+
+	tests/pki: Use CA/certificate valid until 2048 and with 2048 bits
+	This changes tests/pki/server-cert.pem and tests/pki/ca-cert.pem to have
+	2048 bits. These certificates were generated using the
+	instructions on https://www.spice-space.org/spice-user-manual.html
+	The -subj args were omitted, and the defaults suggested by openssl used.
+	The -days parameter was changed to -days 10950, the bits to 2048.
+
+	This fixes https://gitlab.freedesktop.org/spice/spice/issues/27.
+
+	Some distros are starting to use stricter settings for their openssl
+	configuration, which forbids 1024 bit keys, and causes test suite
+	failures.
+
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+2018-12-06  Christophe Fergeau  <cfergeau@redhat.com>
+
+	qxl: Release QXL resources in red_put_surface_cmd
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	display-channel: Store full RedSurfaceCmd, not just QXLReleaseInfoExt
+	Now that we have a refcounted RedSurfaceCmd, we can store the command
+	itself in DisplayChannel rather than copying QXLReleaseInfoExt. This
+	will let us move the release of the QXL guest resources in red-parse-qxl
+	in the next commit.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	qxl: Add red_surface_cmd_{new, ref, unref} helpers
+	Currently, RedWorker is using stack-allocated variables for RedSurfaceCmd.
+	Surface commands are rare enough that we can dynamically allocate them
+	instead, and make the API in red-parse-qxl.h consistent with how other
+	QXL commands are handled.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	qxl: Add red_update_cmd_{new, ref, unref} helpers
+	Currently, RedUpdateCmd are allocated on the stack, and then
+	initialized/uninitialized with red_{get,put}_update_cmd
+	This makes the API inconsistent with what is being done for RedDrawable,
+	RedCursor and RedMessage. QXLUpdateCmd are not occurring very often,
+	we can dynamically allocate them instead, and get a consistent API.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	qxl: Release QXL resources in red_put_update_cmd
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	qxl: Add red_message_{new, ref, unref} helpers
+	Currently, RedMessage are allocated on the stack, and then
+	initialized/uninitialized with red_{get,put}_message
+	This makes the API inconsistent with what is being done for RedDrawable
+	and RedCursor. Since QXLMessage is just a (mostly unused/unsecure) debugging tool,
+	we can dynamically allocate it instead, and get a consistent API.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	qxl: Release QXL resource in red_put_message
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	qxl: Add red_cursor_cmd_{new, ref, unref} helpers
+	Currently, the cursor channel is allocating RedCursorCmd instances itself, and then
+	calling into red-parse-qxl.h to initialize it, and doing something
+	similar when releasing the data. This commit moves this common code to
+	red-parse-qxl.[ch]
+	The ref/unref are not strictly needed, red_cursor_cmd_free() would
+	currently be enough, but this makes the API consistent with
+	red_drawable_{new,ref,unref}.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	qxl: Fix guest resources release in red_put_drawable()
+	At the moment, we'll unconditionally release the guest QXL resources in
+	red_put_drawable() even if red_get_drawable() failed and did not
+	initialize drawable->release_info_ext properly.
+	This commit only sets RedDrawable::qxl once the guest resource have been
+	successfully retrieved, and only free the guest QXL resources when
+	RedDrawable::qxl is set.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	qxl: Make red_{get, put}_drawable static
+	Rather than needing to call red_drawable_new() and then initialize it
+	with red_get_drawable(), we can improve slightly red_drawable new so
+	that red_drawable_{new,ref,unref} is all which is used by code out of
+	red-parse-qxl.c.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	qxl: Move red_drawable_unref/red_drawable_new
+	RedDrawable really is a RedDrawCmd which is parsed by red-parse-qxl.h
+	Moreover, red_drawable_ref() is already defined inline in
+	red-parse-qxl.h, and red_drawable_unref() is declared there too even if
+	its code is still in red-worker.c
+	This commit moves them close to the other functions creating/unref'ing
+	QXL commands parsed by red-parse-qxl.h.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2018-12-04  Frediano Ziglio  <fziglio@redhat.com>
+
+	tests: Use g_assert_(non)null instead of g_assert
+	Just a style change, on more recent GLib would print a more
+	friendly error report.
+
+	Acked-by: Uri Lublin <uril@redhat.com>
+	Acked-by: Victor Toso <victortoso@redhat.com>
+
+2018-12-03  Marc-André Lureau  <marcandre.lureau@redhat.com>
+
+	smartcard: set char device state
+	Follow all other char devices implementation (spicevmc, agent,
+	stream-device) and set the char device state when
+	connected/disconnected. This allows qemu to discard writes, optimize a
+	bit the source polling, and will trigger HUP events.
+
+	See related qemu "char/spice: discard write() if backend is
+	disconnected".
+
+	Note: sif->state() should probably be handled at the char-device
+	level. I am not sure what the smartcard channel really brings over
+	plain spicevmc...
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2018-11-26  Christophe Fergeau  <cfergeau@redhat.com>
+
+	dcc: Add debug log when setting compression
+	Without this it's not obvious that a compression setting took effect.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2018-11-16  Frediano Ziglio  <fziglio@redhat.com>
+
+	tests: Add a small test for red_record_ APIs
+	Acked-by: Eduardo Lima (Etrunko) <etrunko@redhat.com>
+
+	test-leaks: Avoid clashing with test-display-base ports
+	Is possible that port 5913 is already in use as tests that uses
+	test_new will attempt to use ports from 5912 to 5921 so use a port
+	not in that range.
+
+	Acked-by: Eduardo Lima (Etrunko) <etrunko@redhat.com>
+
+	test-display-base: Fix warning message avoidance
+	test_new function attempts to detect attempts to listen to tcp ports
+	already in listening state detecting some messages during
+	spice_server_init. However the check is wrong (broken in recent
+	34a44d3e940bcc "test-display-base: Avoid spurious errors due to listen
+	failures") and incomplete (missing message).
+
+	To better test this conditions put some of the ports in listening
+	state (like with a "nc -l 5912 & nc -l 5913 &" command) and run
+	tests in parallel (like with a "make check -j" command).
+
+	Acked-by: Eduardo Lima (Etrunko) <etrunko@redhat.com>
+
+	ci: Ignore leak from GnuTLS p11 call
+	Fix Fedora 29 one-time leak.
+
+	Acked-by: Eduardo Lima (Etrunko) <etrunko@redhat.com>
+
+	ci: Merge new glib.supp file
+	Merge from GLib master repository.
+
+	Acked-by: Eduardo Lima (Etrunko) <etrunko@redhat.com>
+
+	red-replay-qxl: Remove useless end of line
+	Spice log functions already add an end of line.
+
+	Acked-by: Victor Toso <victortoso@redhat.com>
+
+2018-11-10  Frediano Ziglio  <fziglio@redhat.com>
+
+	test-display-base: Avoid spurious errors due to listen failures
+	To set up a listening socket usually you call in sequence:
+	- socket;
+	- bind;
+	- listen.
+	If you try to bind() to a port when another socket is already
+	listening on that port, the bind() will fail.
+	However, it is possible that the bind() may succeed and the listen()
+	will fail, as demonstrated in the following sequence:
+	- socket() create socket 1;
+	- bind() to port N on socket 1;
+	- socket() create socket 2;
+	- bind() to port N on socket 2;
+	- listen() on socket 1;
+	- listen() on socket 2 <-- failure.
+
+	When running tests (especially multiple tests running in parallel), it
+	may sometimes happen that there are other tests already listening on
+	the port that we are trying to use. In this case, we want to ignore
+	this error and simply try to listen on a different port. We already
+	attempted to handle this scenario, but we were only ignoring bind()
+	errors and not listen() errors. So in the scenario mentioned above,
+	the listen() error was causing the entire test to fail instead of
+	allowing us to try to listen on another port.
+
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+2018-11-08  Frediano Ziglio  <fziglio@redhat.com>
+
+	ci: Do not try to downgrade asciidoc anymore
+	Is not more necessary to downgrade asciidoc, the issue was fixed
+	in Fedora 29, now used by CI.
+
+	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+	char-device: Remove initial underscores from __red_char_device_write_buffer_get
+	Just cosmetic changes, the static function had underscores to
+	distinguish from the exported one which was recently renamed.
+
+	Acked-by: Lukáš Hrázký <lhrazky@redhat.com>
+
+2018-11-08  Lukáš Hrázký  <lhrazky@redhat.com>
+
+	reds: move vdagent write buffer creation into a function
+	Adds a function to create a write buffer for sending a message to
+	vdagent from the server to prevent code duplication.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	char-device: separate functions to get write buffer for client and server
+	Instead of having a single red_char_device_write_buffer_get function to
+	get both client and server buffers and decide by testing client == NULL,
+	have separate function for a client and for a server. The situation
+	should always be clear (you're either on the client or on the server
+	side) and you shouldn't need to parametrize that.
+
+	For the server case, add a use_token parameter instead of a separate
+	red_char_device_write_buffer_get_server_no_token function, as you may
+	want to parametrize that.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2018-10-30  Frediano Ziglio  <fziglio@redhat.com>
+
+	reds: Use monotonic time for ticket expiration
+	Avoid time adjustment issues.
+	For instance ticket validity can change when daylight time changes.
+
+	Acked-by: Lukáš Hrázký <lhrazky@redhat.com>
+
+2018-10-15  Frediano Ziglio  <fziglio@redhat.com>
+
+	Use new common demarshallers.h
+	Avoids mismatching duplicate declarations causing potentially
+	ABI incompatibilities.
+
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+2018-10-09  Frediano Ziglio  <fziglio@redhat.com>
+
+	utils: Get monotonic time in a coherent way
+	Use a single function to get monotonic time.
+
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+	display-channel: Remove useless parenthesis
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+	red-stream: Propagate RedStreamSslStatus type
+	Do not convert RedStreamSslStatus enumeration type back to int.
+	This allows compilers to perform some more type safe checks.
+
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+2018-10-08  Christophe Fergeau  <cfergeau@redhat.com>
+
+	utils: Remove spice_get_monotonic_time_ms
+	This is a thin wrapper over g_get_monotonic_time_ms, and is called only
+	once, so we can call directly g_get_monotonic_time_ms instead.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2018-09-28  Frediano Ziglio  <fziglio@redhat.com>
+
+	ci: Use release build with Meson
+	Some compiler warnings are triggered only if optimisations are
+	turned on. By default with debug build optimisations are disabled.
+
+	Acked-by: Eduardo Lima (Etrunko) <etrunko@redhat.com>
+
+2018-09-26  Eduardo Lima (Etrunko)  <etrunko@redhat.com>
+
+	Bump meson requirement to 0.47.2
+	This new version ships the fix for the issue where 'check' keyword could
+	not be used in project definition, so we had to run that command again
+	only to check if it succeeded.
+
+	https://github.com/mesonbuild/meson/issues/3944
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+	Acked-by: Victor Toso <victortoso@redhat.com>
+
+2018-09-25  Lukáš Hrázký  <lhrazky@redhat.com>
+
+	red-qxl: remove an unnecessary level of indirection in create/destroy surface
+	Acked-by: Victor Toso <victortoso@redhat.com>
+
+2018-09-21  Lukáš Hrázký  <lhrazky@redhat.com>
+
+	Count display channels for tablet mode check
+	Having a single QXL interface is not enough, there can be other (e.g.
+	streaming) display channels that make the tablet unusable. Add a check for the
+	number of display channels also being equal to 1. We still need the check for
+	QXL interaces, because the tablet only works with QXL.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2018-09-19  Frediano Ziglio  <fziglio@redhat.com>
+
+	syntax-check: Add missing contributors names to AUTHORS
+	Acked-by: Eduardo Lima (Etrunko) <etrunko@redhat.com>
+
+2018-09-19  Changqing Li  <changqing.li@windriver.com>
+
+	spice: fix compile error
+	fix below compile error:
+	format '%d' expects argument of type 'int', but argument 6 has
+	type 'long unsigned int' [-Werror=format=]
+
+	spice compile failed on 32bit system, since upstream commit
+	9541cd2fe change %ld to %PRIdPTR, %PRIdPTR is %d, but argument
+	strm.total_out is uLong.
+
+	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
+
+2018-09-03  Eduardo Lima (Etrunko)  <etrunko@redhat.com>
+
+	meson: Fix usage of add_project_arguments()
+	This function does accept a list of arguments, so there is no need to
+	iterate over it.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2018-08-31  Eduardo Lima (Etrunko)  <etrunko@redhat.com>
+
+	ci: Workaround asciidoc failure
+	Since commit e5a93d7a30f71f01052392d13e33e0373bccee8f asciidoc has been
+	failing. Frediano noticed that there is no such problem with Fedora 27,
+	and it looks like asciidoc version 8.6.10 in Fedora 28 is causing
+	the problem. Downgrading it to 8.6.8 seems to fix it while we don't
+	find the definite solution.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+2018-08-30  Eduardo Lima (Etrunko)  <etrunko@redhat.com>
+
+	Update gitlab-ci to use meson
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
+	Add support for building with meson/ninja
+	In a comparison with current autotools build system, meson/ninja
+	provides a huge improvement in build speed, while keeping the same
+	functionalities currently available and being considered more user
+	friendly.
+
+	The new system coexists within the same repository with the current one,
+	so we can do more extensive testing of its functionality before deciding
+	if the old system can be removed, or for some reason, has to stay for
+	good.
+
+	- Meson: https://mesonbuild.com
+
+	  This is the equivalent of autogen/configure step in autotools. It
+	  generates the files that will be used by ninja to actually build the
+	  source code.
+
+	  The project has received lots of traction recently, with many GNOME
+	  projects willing to move to this new build system. The following wiki
+	  page has more details of the status of the many projects being ported:
+
+	    https://wiki.gnome.org/Initiatives/GnomeGoals/MesonPorting
+
+	  Meson has a python-like syntax, easy to read, and the documentation
+	  on the project is very complete, with a dedicated page on how to port
+	  from autotools, explaining how most common use cases can be
+	  implemented using meson.
+
+	    http://mesonbuild.com/Porting-from-autotools.html
+
+	  Other important sources of information:
+
+	    http://mesonbuild.com/howtox.html
+	    http://mesonbuild.com/Syntax.html
+	    http://mesonbuild.com/Reference-manual.html
+
+	- Ninja: https://ninja-build.org
+
+	  Ninja is the equivalent of make in an autotools setup, which actually
+	  builds the source code. It has being used by large and complex
+	  projects such as Google Chrome, Android and LLVM. There is not much to
+	  say about ninja (other than it is much faster than make) because we
+	  won't interact directly with it as much, as meson does the middle man
+	  job here. The reasoning for creating ninja in the first place is
+	  explained on the following post:
+
+	    http://neugierig.org/software/chromium/notes/2011/02/ninja.html
+
+	  Also its manual provides more in-depth information about the design
+	  principles:
+
+	    https://ninja-build.org/manual.html
+
+	- Basic workflow:
+
+	  Meson package is available for most if not all distros, so, taking
+	  Fedora as an example, we only need to run:
+
+	    # dnf -y install meson ninja-build.
+
+	  With Meson, building in-tree is not possible at all, so we need to
+	  pass a directory as argument to meson where we want the build to be
+	  done. This has the advantage of creating builds with different options
+	  under the same parent directory, e.g.:
+
+	    $ meson ./build --prefix=/usr
+	    $ meson ./build-extra -Dextra-checks=true -Dalignment-checks=true
+
+	  After configuration is done, we call ninja to actually do the build.
+
+	    $ ninja -C ./build
+	    $ ninja -C ./build install
+
+	  Ninja defaults to parallel builds, and this can be changed with the -j
+	  flag.
+
+	    $ ninja -j 10 -C ./build
+
+	- Hacking:
+
+	  * meson.build: Mandatory for the project root and usually found under
+	                 each directory you want something to be built.
+
+	  * meson_options.txt: Options that can interfere with the result of the
+	                       build.
+
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+	Acked-by: Victor Toso <victortoso@redhat.com>
+
+2018-08-22  Snir Sheriber  <ssheribe@redhat.com>
+
+	Support h265 in stream-channel
+	Acked-by: Frediano Ziglio <fziglio@redhat.com>
+
 2018-08-22  Christophe Fergeau  <cfergeau@redhat.com>
 
 	build: Prepare for 0.14.1 release
@@ -4991,6 +6303,8 @@
 
 	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
 
+2017-02-28  Frediano Ziglio  <fziglio@redhat.com>
+
 	display-channel: Clean more stuff on finalize
 	Release surfaces, cache and monitor configurations.
 
@@ -5000,8 +6314,6 @@
 	clip_in_draw_dest was not freed correctly.
 
 	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
-
-2017-02-28  Frediano Ziglio  <fziglio@redhat.com>
 
 	reds: Check that we do not free the wrong agent device
 	Do not assume the device passed as an argument to
@@ -6249,7 +7561,7 @@
 
 	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
 
-2016-12-06  Frediano Ziglio  <fziglio@redhat.com>
+2016-12-05  Frediano Ziglio  <fziglio@redhat.com>
 
 	Support QXL remove on spice_server_remove_interface
 	Allow to dynamically remove QXL interfaces. This could be used to
@@ -8725,7 +10037,7 @@
 
 	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
 
-2016-06-16  Frediano Ziglio  <fziglio@redhat.com>
+2016-06-15  Frediano Ziglio  <fziglio@redhat.com>
 
 	Remove message_buf from EncoderData
 	This buffer was just written and then used, no reason to store into
@@ -8733,7 +10045,7 @@
 
 	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
 
-2016-06-16  Eduardo Lima (Etrunko)  <etrunko@redhat.com>
+2016-06-15  Eduardo Lima (Etrunko)  <etrunko@redhat.com>
 
 	configure: Better wording hasn't -> has not
 	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
@@ -8971,7 +10283,7 @@
 	Add a structure to hold ImageEncoders shared data
 	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
 
-2016-06-14  snir sheriber  <ssheribe@redhat.com>
+2016-06-13  snir sheriber  <ssheribe@redhat.com>
 
 	LZ4 compression is now available at the Spicevmc channel
 	Compressed message type is CompressedData which contains compression
@@ -9100,14 +10412,14 @@
 
 	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
 
+2016-06-07  Frediano Ziglio  <fziglio@redhat.com>
+
 	Move dcc glz field initialization into dcc_new
 	There is no reason to initialize these fields in two different places.
 	Note that an usage between dcc_new and the function where these
 	field were initialised would have resulted in a crash.
 
 	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
-
-2016-06-07  Frediano Ziglio  <fziglio@redhat.com>
 
 	record: Make red_record_cursor_cmd static
 	This function is never used outside this compile unit.
@@ -9689,6 +11001,8 @@
 	Extend it's usage.
 	This for instance leads to the removal of release_item callback.
 
+2016-05-17  Frediano Ziglio  <fziglio@redhat.com>
+
 	Use reference counting for RedPipeItem
 	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
 
@@ -9780,8 +11094,6 @@
 
 	Remove unused refs field
 	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
-
-2016-05-17  Frediano Ziglio  <fziglio@redhat.com>
 
 	remove only written num_mig_target_clients field in RedsState
 	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
@@ -11243,6 +12555,8 @@
 
 	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
 
+2016-02-11  Frediano Ziglio  <fziglio@redhat.com>
+
 	CommonChannel: hold a reference to QXLInstance instead of RedWorker
 	CommonChannel does not need to know about RedWorker.
 	This reduce a bit dependencies between objects.
@@ -11397,8 +12711,6 @@
 	return n;
 
 	Acked-by: Jonathon Jongsma <jjongsma at redhat.com>
-
-2016-02-11  Frediano Ziglio  <fziglio@redhat.com>
 
 	dispatcher: remove unused async_commands ring
 	The only usage of this ring was to have a message when there was no
@@ -12067,6 +13379,8 @@
 	problem (stream in red_peer_handle_incoming will use cached stream value).
 
 	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
+
+2016-01-19  Frediano Ziglio  <fziglio@redhat.com>
 
 	tests: test removed triggered timers are not called
 	This could happen for instance if a given timer remove all clients
@@ -12811,7 +14125,7 @@
 	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
 	Acked-by: Fabiano Fidêncio <fidencio@redhat.com>
 
-2015-12-04  Frediano Ziglio  <fziglio@redhat.com>
+2015-12-03  Frediano Ziglio  <fziglio@redhat.com>
 
 	server: rename files
 	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
@@ -14421,7 +15735,7 @@
 	Acked-by: Frediano Ziglio <fziglio@redhat.com>
 	Acked-by: Jonathon Jongsma <jjongsma@redhat.com>
 
-2015-08-28  Frediano Ziglio  <fziglio@redhat.com>
+2015-08-27  Frediano Ziglio  <fziglio@redhat.com>
 
 	Simplify set_surface_release_info
 	Acked-by: Christophe Fergeau <cfergeau@redhat.com>
@@ -16452,11 +17766,11 @@
 
 	Release 0.12.4
 
+2013-07-16  Uri Lublin  <uril@redhat.com>
+
 	Update spice-common submodule (get spice-protocol 0.12.6)
 
 	syntax-check: trailing whitespaces -- ignore binary files
-
-2013-07-16  Uri Lublin  <uril@redhat.com>
 
 	syntax-check: remove trailing whitespaces
 	Only whitespace changes in this commit.
@@ -19681,7 +20995,7 @@
 	Also fixup the header of server/red_parse_qxl.c, which still contained
 	some GPL (program rather then library) text in its header.
 
-2011-12-14  Marc-André Lureau  <marcandre.lureau@redhat.com>
+2011-12-13  Marc-André Lureau  <marcandre.lureau@redhat.com>
 
 	spelling: s/cupture/capture
 
@@ -25066,13 +26380,13 @@
 
 	Still some room to improvment but later...
 
+2010-04-05  Izik Eidus  <ieidus@redhat.com>
+
 	spice server: remove surface_id and surfaces_dest[3] from guest mem
 	Validate the surface_ids just once and keep them in safe
 	memory area
 
 	Make things simpler
-
-2010-04-05  Izik Eidus  <ieidus@redhat.com>
 
 	spice: common: gdi_canvas fix gdi objects leak
 	BitmapMask was used by the draw_text function as well

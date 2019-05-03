@@ -20,9 +20,14 @@ option('opus',
     yield : true,
     description: 'Enable Opus audio codec')
 
-option('smartcard',
+option('recorder',
     type : 'boolean',
-    value : true,
+    value : false,
+    yield : true,
+    description: 'Enable recorder instrumentation')
+
+option('smartcard',
+    type : 'feature',
     yield : true,
     description : 'Enable smartcard support')
 

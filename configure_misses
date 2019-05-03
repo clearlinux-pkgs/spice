@@ -2,11 +2,9 @@ Configure miss: pthread_np.h usability
 Configure miss: pthread_np.h presence
 Configure miss: pthread_np.h
 Configure miss: SMARTCARD
-Configure miss: SMARTCARD
 Configure miss: GSTREAMER_1_0
 Configure miss: GSTREAMER_0_10
 Configure miss: whether -Wno-missing-field-initializers is needed
 Configure miss: floor
-Configure miss: SMARTCARD
 Configure miss: SMARTCARD
 Configure miss: GDK_PIXBUF
