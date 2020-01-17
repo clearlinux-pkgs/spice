@@ -6,10 +6,10 @@
 #
 Name     : spice
 Version  : 0.14.2
-Release  : 28
+Release  : 29
 URL      : https://www.spice-space.org/download/releases/spice-server/spice-0.14.2.tar.bz2
 Source0  : https://www.spice-space.org/download/releases/spice-server/spice-0.14.2.tar.bz2
-Source1 : https://www.spice-space.org/download/releases/spice-server/spice-0.14.2.tar.bz2.sign
+Source1  : https://www.spice-space.org/download/releases/spice-server/spice-0.14.2.tar.bz2.sign
 Summary  : SPICE server library
 Group    : Development/Tools
 License  : LGPL-2.1
@@ -75,28 +75,34 @@ license components for the spice package.
 
 %prep
 %setup -q -n spice-0.14.2
+cd %{_builddir}/spice-0.14.2
 
 %build
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1570656101
+export SOURCE_DATE_EPOCH=1579301002
 unset LD_AS_NEEDED
 export GCC_IGNORE_WERROR=1
 export CFLAGS="$CFLAGS -fno-lto -fstack-protector-strong -mzero-caller-saved-regs=used "
 export FCFLAGS="$CFLAGS -fno-lto -fstack-protector-strong -mzero-caller-saved-regs=used "
 export FFLAGS="$CFLAGS -fno-lto -fstack-protector-strong -mzero-caller-saved-regs=used "
 export CXXFLAGS="$CXXFLAGS -fno-lto -fstack-protector-strong -mzero-caller-saved-regs=used "
-%configure --disable-static --disable-celt051 --without-sasl --enable-lz4 --enable-opengl=no  --disable-opus
+%configure --disable-static --disable-celt051 \
+--without-sasl \
+--enable-lz4 \
+--enable-opengl=no \
+--disable-opus \
+--enable-smart
 make
 
 %install
-export SOURCE_DATE_EPOCH=1570656101
+export SOURCE_DATE_EPOCH=1579301002
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/spice
-cp COPYING %{buildroot}/usr/share/package-licenses/spice/COPYING
-cp subprojects/spice-common/COPYING %{buildroot}/usr/share/package-licenses/spice/subprojects_spice-common_COPYING
+cp %{_builddir}/spice-0.14.2/COPYING %{buildroot}/usr/share/package-licenses/spice/01a6b4bf79aca9b556822601186afab86e8c4fbf
+cp %{_builddir}/spice-0.14.2/subprojects/spice-common/COPYING %{buildroot}/usr/share/package-licenses/spice/3704f4680301a60004b20f94e0b5b8c7ff1484a9
 %make_install
 
 %files
@@ -125,5 +131,5 @@ cp subprojects/spice-common/COPYING %{buildroot}/usr/share/package-licenses/spic
 
 %files license
 %defattr(0644,root,root,0755)
-/usr/share/package-licenses/spice/COPYING
-/usr/share/package-licenses/spice/subprojects_spice-common_COPYING
+/usr/share/package-licenses/spice/01a6b4bf79aca9b556822601186afab86e8c4fbf
+/usr/share/package-licenses/spice/3704f4680301a60004b20f94e0b5b8c7ff1484a9

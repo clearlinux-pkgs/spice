@@ -1,3 +1,6 @@
---disable-celt051 --without-sasl --enable-lz4 --enable-opengl=no  --disable-opus
-
-
+--disable-celt051
+--without-sasl
+--enable-lz4
+--enable-opengl=no
+--disable-opus
+--enable-smart
