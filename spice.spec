@@ -6,7 +6,7 @@
 #
 Name     : spice
 Version  : 0.14.2
-Release  : 29
+Release  : 30
 URL      : https://www.spice-space.org/download/releases/spice-server/spice-0.14.2.tar.bz2
 Source0  : https://www.spice-space.org/download/releases/spice-server/spice-0.14.2.tar.bz2
 Source1  : https://www.spice-space.org/download/releases/spice-server/spice-0.14.2.tar.bz2.sign
@@ -29,6 +29,7 @@ BuildRequires : pkgconfig(gio-2.0)
 BuildRequires : pkgconfig(gio-unix-2.0)
 BuildRequires : pkgconfig(glib-2.0)
 BuildRequires : pkgconfig(gobject-2.0)
+BuildRequires : pkgconfig(libcacard)
 BuildRequires : pkgconfig(openssl)
 BuildRequires : pkgconfig(orc-0.4)
 BuildRequires : pkgconfig(pixman-1)
@@ -82,7 +83,7 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1579301002
+export SOURCE_DATE_EPOCH=1579301251
 unset LD_AS_NEEDED
 export GCC_IGNORE_WERROR=1
 export CFLAGS="$CFLAGS -fno-lto -fstack-protector-strong -mzero-caller-saved-regs=used "
@@ -98,7 +99,7 @@ export CXXFLAGS="$CXXFLAGS -fno-lto -fstack-protector-strong -mzero-caller-saved
 make
 
 %install
-export SOURCE_DATE_EPOCH=1579301002
+export SOURCE_DATE_EPOCH=1579301251
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/spice
 cp %{_builddir}/spice-0.14.2/COPYING %{buildroot}/usr/share/package-licenses/spice/01a6b4bf79aca9b556822601186afab86e8c4fbf
