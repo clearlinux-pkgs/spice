@@ -13,6 +13,7 @@ libspice-server.so.1:SPICE_SERVER_0.12.6
 libspice-server.so.1:SPICE_SERVER_0.13.1
 libspice-server.so.1:SPICE_SERVER_0.13.2
 libspice-server.so.1:SPICE_SERVER_0.14.2
+libspice-server.so.1:SPICE_SERVER_0.14.3
 libspice-server.so.1:SPICE_SERVER_0.6.0
 libspice-server.so.1:SPICE_SERVER_0.6.1
 libspice-server.so.1:SPICE_SERVER_0.8.0
@@ -59,12 +60,14 @@ libspice-server.so.1:spice_server_add_ssl_client
 libspice-server.so.1:spice_server_char_device_recognized_subtypes
 libspice-server.so.1:spice_server_char_device_wakeup
 libspice-server.so.1:spice_server_destroy
+libspice-server.so.1:spice_server_free_video_codecs
 libspice-server.so.1:spice_server_get_best_playback_rate
 libspice-server.so.1:spice_server_get_best_record_rate
 libspice-server.so.1:spice_server_get_image_compression
 libspice-server.so.1:spice_server_get_num_clients
 libspice-server.so.1:spice_server_get_peer_info
 libspice-server.so.1:spice_server_get_sock_info
+libspice-server.so.1:spice_server_get_video_codecs
 libspice-server.so.1:spice_server_init
 libspice-server.so.1:spice_server_is_server_mouse
 libspice-server.so.1:spice_server_kbd_leds

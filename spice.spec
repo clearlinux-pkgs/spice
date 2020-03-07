@@ -5,11 +5,11 @@
 # Source0 file verified with key 0x97D9123DE37A484F (toso@posteo.net)
 #
 Name     : spice
-Version  : 0.14.2
-Release  : 30
-URL      : https://www.spice-space.org/download/releases/spice-server/spice-0.14.2.tar.bz2
-Source0  : https://www.spice-space.org/download/releases/spice-server/spice-0.14.2.tar.bz2
-Source1  : https://www.spice-space.org/download/releases/spice-server/spice-0.14.2.tar.bz2.sign
+Version  : 0.14.3
+Release  : 31
+URL      : https://www.spice-space.org/download/releases/spice-server/spice-0.14.3.tar.bz2
+Source0  : https://www.spice-space.org/download/releases/spice-server/spice-0.14.3.tar.bz2
+Source1  : https://www.spice-space.org/download/releases/spice-server/spice-0.14.3.tar.bz2.sign
 Summary  : SPICE server library
 Group    : Development/Tools
 License  : LGPL-2.1
@@ -75,15 +75,15 @@ license components for the spice package.
 
 
 %prep
-%setup -q -n spice-0.14.2
-cd %{_builddir}/spice-0.14.2
+%setup -q -n spice-0.14.3
+cd %{_builddir}/spice-0.14.3
 
 %build
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1579301251
+export SOURCE_DATE_EPOCH=1583544899
 unset LD_AS_NEEDED
 export GCC_IGNORE_WERROR=1
 export CFLAGS="$CFLAGS -fno-lto -fstack-protector-strong -mzero-caller-saved-regs=used "
@@ -99,11 +99,11 @@ export CXXFLAGS="$CXXFLAGS -fno-lto -fstack-protector-strong -mzero-caller-saved
 make
 
 %install
-export SOURCE_DATE_EPOCH=1579301251
+export SOURCE_DATE_EPOCH=1583544899
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/spice
-cp %{_builddir}/spice-0.14.2/COPYING %{buildroot}/usr/share/package-licenses/spice/01a6b4bf79aca9b556822601186afab86e8c4fbf
-cp %{_builddir}/spice-0.14.2/subprojects/spice-common/COPYING %{buildroot}/usr/share/package-licenses/spice/3704f4680301a60004b20f94e0b5b8c7ff1484a9
+cp %{_builddir}/spice-0.14.3/COPYING %{buildroot}/usr/share/package-licenses/spice/01a6b4bf79aca9b556822601186afab86e8c4fbf
+cp %{_builddir}/spice-0.14.3/subprojects/spice-common/COPYING %{buildroot}/usr/share/package-licenses/spice/3704f4680301a60004b20f94e0b5b8c7ff1484a9
 %make_install
 
 %files
@@ -114,7 +114,6 @@ cp %{_builddir}/spice-0.14.2/subprojects/spice-common/COPYING %{buildroot}/usr/s
 /usr/include/spice-server/spice-audio.h
 /usr/include/spice-server/spice-char.h
 /usr/include/spice-server/spice-core.h
-/usr/include/spice-server/spice-experimental.h
 /usr/include/spice-server/spice-input.h
 /usr/include/spice-server/spice-migration.h
 /usr/include/spice-server/spice-qxl.h
@@ -128,7 +127,7 @@ cp %{_builddir}/spice-0.14.2/subprojects/spice-common/COPYING %{buildroot}/usr/s
 %files lib
 %defattr(-,root,root,-)
 /usr/lib64/libspice-server.so.1
-/usr/lib64/libspice-server.so.1.13.0
+/usr/lib64/libspice-server.so.1.14.0
 
 %files license
 %defattr(0644,root,root,0755)

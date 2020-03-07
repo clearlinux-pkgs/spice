@@ -12,6 +12,7 @@ option('extra-checks',
 
 option('celt051',
     type : 'feature',
+    value : 'disabled',
     yield : true,
     description: 'Enable celt051 audio codec')
 
@@ -20,11 +21,11 @@ option('opus',
     yield : true,
     description: 'Enable Opus audio codec')
 
-option('recorder',
-    type : 'boolean',
-    value : false,
-    yield : true,
-    description: 'Enable recorder instrumentation')
+option('instrumentation',
+    type : 'combo',
+    value : 'no',
+    choices : ['recorder', 'agent', 'no'],
+    description: 'Enable instrumentation')
 
 option('smartcard',
     type : 'feature',
@@ -46,3 +47,9 @@ option('generate-code',
     type : 'combo',
     choices : ['all', 'server', 'client'],
     description : 'Which code should be built')
+
+option('tests',
+    type : 'boolean',
+    value : true,
+    yield : true,
+    description : 'Enable SPICE tests')
