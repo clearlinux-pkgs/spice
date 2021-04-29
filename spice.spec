@@ -6,7 +6,7 @@
 #
 Name     : spice
 Version  : 0.14.3
-Release  : 32
+Release  : 33
 URL      : https://www.spice-space.org/download/releases/spice-server/spice-0.14.3.tar.bz2
 Source0  : https://www.spice-space.org/download/releases/spice-server/spice-0.14.3.tar.bz2
 Source1  : https://www.spice-space.org/download/releases/spice-server/spice-0.14.3.tar.bz2.sign
@@ -86,10 +86,10 @@ export LANG=C.UTF-8
 export SOURCE_DATE_EPOCH=1583544899
 unset LD_AS_NEEDED
 export GCC_IGNORE_WERROR=1
-export CFLAGS="$CFLAGS -fno-lto -fstack-protector-strong -mzero-caller-saved-regs=used "
-export FCFLAGS="$CFLAGS -fno-lto -fstack-protector-strong -mzero-caller-saved-regs=used "
-export FFLAGS="$CFLAGS -fno-lto -fstack-protector-strong -mzero-caller-saved-regs=used "
-export CXXFLAGS="$CXXFLAGS -fno-lto -fstack-protector-strong -mzero-caller-saved-regs=used "
+export CFLAGS="$CFLAGS -fno-lto -fstack-protector-strong -fzero-call-used-regs=used "
+export FCFLAGS="$CFLAGS -fno-lto -fstack-protector-strong -fzero-call-used-regs=used "
+export FFLAGS="$CFLAGS -fno-lto -fstack-protector-strong -fzero-call-used-regs=used "
+export CXXFLAGS="$CXXFLAGS -fno-lto -fstack-protector-strong -fzero-call-used-regs=used "
 %configure --disable-static --disable-celt051 \
 --without-sasl \
 --enable-lz4 \
