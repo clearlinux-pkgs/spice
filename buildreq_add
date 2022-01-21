@@ -1,7 +1,7 @@
 # This file contains additional build requirements that did not get
 # picked up automatically. One name per line, no whitespace.
 
-pyparsing
+pypi(pyparsing)
 lz4-dev
 mesa-dev
 zlib-dev
@@ -10,8 +10,5 @@ asciidoc
 glu-dev
 spice-protocol
 python3
-six
+pypi(six)
 glib-networking
-gdb
-strace
-joe

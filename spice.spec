@@ -6,7 +6,7 @@
 #
 Name     : spice
 Version  : 0.14.3
-Release  : 33
+Release  : 34
 URL      : https://www.spice-space.org/download/releases/spice-server/spice-0.14.3.tar.bz2
 Source0  : https://www.spice-space.org/download/releases/spice-server/spice-0.14.3.tar.bz2
 Source1  : https://www.spice-space.org/download/releases/spice-server/spice-0.14.3.tar.bz2.sign
@@ -18,10 +18,8 @@ Requires: spice-license = %{version}-%{release}
 Requires: glib-networking
 BuildRequires : asciidoc
 BuildRequires : buildreq-meson
-BuildRequires : gdb
 BuildRequires : glib-networking
 BuildRequires : glu-dev
-BuildRequires : joe
 BuildRequires : libjpeg-turbo-dev
 BuildRequires : lz4-dev
 BuildRequires : mesa-dev
@@ -34,12 +32,10 @@ BuildRequires : pkgconfig(openssl)
 BuildRequires : pkgconfig(orc-0.4)
 BuildRequires : pkgconfig(pixman-1)
 BuildRequires : pkgconfig(spice-protocol)
-BuildRequires : pyparsing
+BuildRequires : pypi(pyparsing)
+BuildRequires : pypi(six)
 BuildRequires : python3
-BuildRequires : six
 BuildRequires : spice-protocol
-BuildRequires : strace
-BuildRequires : valgrind
 BuildRequires : zlib-dev
 
 %description
@@ -83,12 +79,12 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1583544899
+export SOURCE_DATE_EPOCH=1642784865
 unset LD_AS_NEEDED
 export GCC_IGNORE_WERROR=1
 export CFLAGS="$CFLAGS -fno-lto -fstack-protector-strong -fzero-call-used-regs=used "
-export FCFLAGS="$CFLAGS -fno-lto -fstack-protector-strong -fzero-call-used-regs=used "
-export FFLAGS="$CFLAGS -fno-lto -fstack-protector-strong -fzero-call-used-regs=used "
+export FCFLAGS="$FFLAGS -fno-lto -fstack-protector-strong -fzero-call-used-regs=used "
+export FFLAGS="$FFLAGS -fno-lto -fstack-protector-strong -fzero-call-used-regs=used "
 export CXXFLAGS="$CXXFLAGS -fno-lto -fstack-protector-strong -fzero-call-used-regs=used "
 %configure --disable-static --disable-celt051 \
 --without-sasl \
@@ -99,7 +95,7 @@ export CXXFLAGS="$CXXFLAGS -fno-lto -fstack-protector-strong -fzero-call-used-re
 make
 
 %install
-export SOURCE_DATE_EPOCH=1583544899
+export SOURCE_DATE_EPOCH=1642784865
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/spice
 cp %{_builddir}/spice-0.14.3/COPYING %{buildroot}/usr/share/package-licenses/spice/01a6b4bf79aca9b556822601186afab86e8c4fbf
