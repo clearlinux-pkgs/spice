@@ -6,7 +6,7 @@
 #
 Name     : spice
 Version  : 0.14.3
-Release  : 35
+Release  : 36
 URL      : https://www.spice-space.org/download/releases/spice-server/spice-0.14.3.tar.bz2
 Source0  : https://www.spice-space.org/download/releases/spice-server/spice-0.14.3.tar.bz2
 Source1  : https://www.spice-space.org/download/releases/spice-server/spice-0.14.3.tar.bz2.sign
@@ -79,13 +79,13 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1642784865
+export SOURCE_DATE_EPOCH=1664907075
 unset LD_AS_NEEDED
 export GCC_IGNORE_WERROR=1
-export CFLAGS="$CFLAGS -fno-lto -fstack-protector-strong -fzero-call-used-regs=used "
-export FCFLAGS="$FFLAGS -fno-lto -fstack-protector-strong -fzero-call-used-regs=used "
-export FFLAGS="$FFLAGS -fno-lto -fstack-protector-strong -fzero-call-used-regs=used "
-export CXXFLAGS="$CXXFLAGS -fno-lto -fstack-protector-strong -fzero-call-used-regs=used "
+export CFLAGS="$CFLAGS -fno-lto "
+export FCFLAGS="$FFLAGS -fno-lto "
+export FFLAGS="$FFLAGS -fno-lto "
+export CXXFLAGS="$CXXFLAGS -fno-lto "
 %configure --disable-static --disable-celt051 \
 --without-sasl \
 --enable-lz4 \
@@ -95,11 +95,11 @@ export CXXFLAGS="$CXXFLAGS -fno-lto -fstack-protector-strong -fzero-call-used-re
 make
 
 %install
-export SOURCE_DATE_EPOCH=1642784865
+export SOURCE_DATE_EPOCH=1664907075
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/spice
-cp %{_builddir}/spice-0.14.3/COPYING %{buildroot}/usr/share/package-licenses/spice/01a6b4bf79aca9b556822601186afab86e8c4fbf
-cp %{_builddir}/spice-0.14.3/subprojects/spice-common/COPYING %{buildroot}/usr/share/package-licenses/spice/3704f4680301a60004b20f94e0b5b8c7ff1484a9
+cp %{_builddir}/spice-%{version}/COPYING %{buildroot}/usr/share/package-licenses/spice/01a6b4bf79aca9b556822601186afab86e8c4fbf || :
+cp %{_builddir}/spice-%{version}/subprojects/spice-common/COPYING %{buildroot}/usr/share/package-licenses/spice/3704f4680301a60004b20f94e0b5b8c7ff1484a9 || :
 %make_install
 
 %files
